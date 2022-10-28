@@ -36,34 +36,34 @@
 //       // setbuttonstext("ON")
 //     }
 //   }
-//   useEffect(() => {
-//      onValue(ref(db, '/Moisture'), querySnapShot => {
-//        let data = querySnapShot.val() || {};
-//       //  console.log(data)
-//      setMoiture(data);
+  // useEffect(() => {
+  //    onValue(ref(db, '/Moisture'), querySnapShot => {
+  //      let data = querySnapShot.val() || {};
+  //     //  console.log(data)
+  //    setMoiture(data);
 
-//      })
-//     onValue(ref(db, '/Pump Status'), querySnapShot => {
-//       let data = querySnapShot.val() || {};
-//       // setisoff(data);
+  //    })
+  //   onValue(ref(db, '/Pump Status'), querySnapShot => {
+  //     let data = querySnapShot.val() || {};
+  //     // setisoff(data);
 
-//       console.log(data);
-//       if (data={}) {
-//         setisoff(false)
-//         setbuttonstext("OFF")
-//         // update(ref(db, '/'), {
-//         // Pump\status
-//         // });
-//       }
-//       else {
-//         setisoff(true)
-//         // set(ref(db, "/Pump Status"), true)
+  //     console.log(data);
+  //     if (data={}) {
+  //       setisoff(false)
+  //       setbuttonstext("OFF")
+  //       // update(ref(db, '/'), {
+  //       // Pump\status
+  //       // });
+  //     }
+  //     else {
+  //       setisoff(true)
+  //       // set(ref(db, "/Pump Status"), true)
 
-//         setbuttonstext("ON")
-//       }
-//     })
-//     // console.log(moisturevalue)
-//   },[])
+  //       setbuttonstext("ON")
+  //     }
+  //   })
+  //   // console.log(moisturevalue)
+  // },[])
 //   return (
 //     <View style={styles.container}>
 //       <Text><h1>Smart Irrigation </h1></Text>
@@ -89,7 +89,12 @@ import * as React from "react";
 import { StyleSheet, Text, View } from 'react-native';
 import MainContainer from "./screens/MainContainer";
 import Constants from "expo-constants";
+import * as firebase from "firebase/app"
+import { getDatabase, ref, onValue, update, set } from "firebase/database"
+import { firebaseConfig } from "./config"
 export default function App() {
+  // const app = firebase.initializeApp(firebaseConfig)
+  // const db = getDatabase(app)
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -4,9 +4,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import PumpControl from './PumpControl';
 import MoistureGraph from './MoistureGraph';
 import MoistureContent from './MoistureContent';
+import * as firebase from "firebase/app"
+import { getDatabase, ref, onValue, update, set } from "firebase/database"
+import { firebaseConfig } from "../config"
 const Tab = createBottomTabNavigator();
 
 export default function MainContainer() {
+  const app = firebase.initializeApp(firebaseConfig)
+  const db = getDatabase(app)
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -34,9 +39,9 @@ export default function MainContainer() {
             tabBarStyle: {backgroundColor: 'black', height: 62}
           })}
           >
-          <Tab.Screen name="Moisture Content" component={MoistureContent} />
-          <Tab.Screen name="Pump Control" component={PumpControl} />
-          <Tab.Screen name="Moisture Graph" component={MoistureGraph} />
+          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db }} />
+          <Tab.Screen name="Pump Control" component={PumpControl} initialParams={{ db }} />
+          <Tab.Screen name="Moisture Graph" component={MoistureGraph} initialParams={{ db }} />
         </Tab.Navigator>
       </NavigationContainer>
     );

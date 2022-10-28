@@ -1,14 +1,58 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Slider from "@react-native-community/slider";
+import { getDatabase, ref, onValue, update, set } from "firebase/database"
 
-export default function PumpControl() {
-  const [isPumpOn, setisPumpOn] = useState(true);
-  const [pumpSpeed, setPumpSpeed]= useState(0)
+export default function PumpControl({route}) {
+  const [isPumpOff, setisPumpOff] = useState(true);
+  const [pumpSpeed, setPumpSpeed] = useState(0)
+  const db = route.params.db
   const handlePumpCondition = () => {
-    setisPumpOn((prevState) => !prevState);
+    
+    if (isPumpOff) {
+      setisPumpOff(false)
+      set(ref(db, "/Pump Status"), false)
+
+    }
+    else {
+      setisPumpOff(true)
+      set(ref(db, "/Pump Status"), true)
+    }
     setPumpSpeed(0);
   };
+  useEffect(() => {
+  
+
+    onValue(ref(db, '/Pump Status'), querySnapShot => {
+      let data = querySnapShot.val() || {};
+      console.log(data)
+
+
+      if (data == true) {
+        setisPumpOff(true)
+
+      }
+      else {
+        setisPumpOff(false)
+      }
+    })
+
+    onValue(ref(db, '/Motar speed'), querySnapShot => {
+      let data = querySnapShot.val();
+      console.log(data+" "+pumpSpeed)
+      if (pumpSpeed==0)
+        setPumpSpeed(data);
+    })
+
+  }, [isPumpOff])
+  const handlePumpSpeed = (value) => {
+    let speed = Math.round(value)
+    console.log(speed);
+    set(ref(db, "/Motar speed"), speed)
+    setPumpSpeed(speed);
+     
+    
+ }
   return (
     <View style={styles.container}>
       <View style={styles.div}>
@@ -16,12 +60,12 @@ export default function PumpControl() {
       </View>
       <View style={styles.div2}>
         <Text style={styles.divText2}>
-          Currently pump is {isPumpOn ? "ON\nPump Speed: " : "OFF"}
+          Currently pump is {!isPumpOff ? "ON\nPump Speed: "+pumpSpeed : "OFF"}
         </Text>
       </View>
       <Pressable style={styles.btn} onPress={handlePumpCondition}>
         <Text style={styles.btnText}>
-          {isPumpOn ? "TURN OFF PUMP" : "TURN ON PUMP"}
+          {!isPumpOff ? "TURN OFF PUMP" : "TURN ON PUMP"}
         </Text>
       </Pressable>
       <View style={styles.div}>
@@ -31,13 +75,13 @@ export default function PumpControl() {
       <Slider
         style={{width: 300, height:100}}
         minimumValue={0}
-        maximumValue={1}
+        maximumValue={255}
         minimumTrackTintColor="green"
         maximumTrackTintColor="grey"
         thumbTintColor="green"
-        value={pumpSpeed/100}
-        onValueChange={(value)=>{setPumpSpeed(value*100)}}
-        disabled={isPumpOn? false: true}
+        value={pumpSpeed}
+        onValueChange={handlePumpSpeed}
+        disabled={!isPumpOff? false: true}
       />
       <Text style={{fontSize: 22,marginTop: 0}}>Pump Speed: {pumpSpeed} </Text>
       <Pressable style={styles.btn}>
