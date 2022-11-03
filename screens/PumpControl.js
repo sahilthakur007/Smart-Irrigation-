@@ -1,90 +1,118 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Slider from "@react-native-community/slider";
+import * as Progress from "react-native-progress";
 import { getDatabase, ref, onValue, update, set } from "firebase/database"
 
-export default function PumpControl({route}) {
+export default function PumpControl({ route, navigation }) {
   const [isPumpOff, setisPumpOff] = useState(true);
-  const [pumpSpeed, setPumpSpeed] = useState(0)
-  const db = route.params.db
+  const [pumpSpeed, setPumpSpeed] = useState(0);
+  const [waterLevel, setWaterLevel] = useState(0.6);
+    const db = route.params.db
   const handlePumpCondition = () => {
-    
     if (isPumpOff) {
-      setisPumpOff(false)
+      setisPumpOff(false);
       set(ref(db, "/Pump Status"), false)
-
-    }
-    else {
-      setisPumpOff(true)
+    } else {
+      setisPumpOff(true);
       set(ref(db, "/Pump Status"), true)
     }
     setPumpSpeed(0);
   };
-  useEffect(() => {
-  
+    useEffect(() => {
 
-    onValue(ref(db, '/Pump Status'), querySnapShot => {
-      let data = querySnapShot.val() || {};
-      console.log(data)
+      onValue(ref(db, '/Pump Status'), querySnapShot => {
+        let data = querySnapShot.val() || {};
+        console.log(data)
 
+        if (data == true) {
+          setisPumpOff(true)
 
-      if (data == true) {
-        setisPumpOff(true)
+        }
+        else {
+          setisPumpOff(false)
+        }
+      })
 
-      }
-      else {
-        setisPumpOff(false)
-      }
-    })
+      onValue(ref(db, '/Motar speed'), querySnapShot => {
+        let data = querySnapShot.val();
+        console.log(data+" "+pumpSpeed)
+        if (pumpSpeed==0)
+          setPumpSpeed(data);
+      })
 
-    onValue(ref(db, '/Motar speed'), querySnapShot => {
-      let data = querySnapShot.val();
-      console.log(data+" "+pumpSpeed)
-      if (pumpSpeed==0)
-        setPumpSpeed(data);
-    })
-
-  }, [isPumpOff])
+    }, [isPumpOff])
   const handlePumpSpeed = (value) => {
-    let speed = Math.round(value)
+    let speed = Math.round(value);
     console.log(speed);
     set(ref(db, "/Motar speed"), speed)
     setPumpSpeed(speed);
-     
-    
- }
+  };
   return (
     <View style={styles.container}>
-      <View style={styles.div}>
-        <Text style={styles.divText}>Current Pump Status</Text>
-      </View>
-      <View style={styles.div2}>
-        <Text style={styles.divText2}>
-          Currently pump is {!isPumpOff ? "ON\nPump Speed: "+pumpSpeed : "OFF"}
-        </Text>
+      <View style={styles.outerbox1}>
+        <View style={styles.div}>
+          <Text style={styles.divText}>Current Pump Status</Text>
+        </View>
+        <View style={styles.div2}>
+          <Text style={styles.divText2}>
+            Currently pump is {!isPumpOff ? "ON" : "OFF"}
+          </Text>
+        </View>
       </View>
       <Pressable style={styles.btn} onPress={handlePumpCondition}>
         <Text style={styles.btnText}>
           {!isPumpOff ? "TURN OFF PUMP" : "TURN ON PUMP"}
         </Text>
       </Pressable>
-      <View style={styles.div}>
-        <Text style={styles.divText}>Control Pump Speed</Text>
+      <View style={styles.outerbox1}>
+        <View style={styles.div}>
+          <Text style={styles.divText}>Current Water Level</Text>
+        </View>
+        <Progress.Bar
+          progress={waterLevel}
+          width={200}
+          height={18}
+          color={"grey"}
+          style={styles.bar}
+        />
+        <View style={styles.boxes}>
+          <View style={styles.box1}>
+            <Text style={{ fontSize: 20 }}>Water Level</Text>
+          </View>
+          <View style={styles.box2}>
+            <Text style={{ fontSize: 20,fontWeight: "bold" }}>{waterLevel * 100}%</Text>
+          </View>
+        </View>
       </View>
-
-      <Slider
-        style={{width: 300, height:100}}
-        minimumValue={0}
-        maximumValue={255}
-        minimumTrackTintColor="green"
-        maximumTrackTintColor="grey"
-        thumbTintColor="green"
-        value={pumpSpeed}
-        onValueChange={handlePumpSpeed}
-        disabled={!isPumpOff? false: true}
-      />
-      <Text style={{fontSize: 22,marginTop: 0}}>Pump Speed: {pumpSpeed} </Text>
-      <Pressable style={styles.btn}>
+      <View style={styles.outerbox1}>
+        <View style={styles.div}>
+          <Text style={styles.divText}>Control Pump Speed</Text>
+        </View>
+        <Slider
+          style={{ width: 300, height: 100, marginBottom: -20 }}
+          minimumValue={0}
+          maximumValue={255}
+          minimumTrackTintColor="green"
+          maximumTrackTintColor="grey"
+          thumbTintColor="green"
+          value={pumpSpeed}
+          onValueChange={handlePumpSpeed}
+          disabled={!isPumpOff ? false : true}
+        />
+        <View style={styles.boxes}>
+          <View style={styles.box1}>
+            <Text style={{ fontSize: 20}}>Pump Speed</Text>
+          </View>
+          <View style={styles.box2}>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{pumpSpeed}</Text>
+          </View>
+        </View>
+      </View>
+      <Pressable
+        style={styles.btn}
+        onPress={() => navigation.navigate("pumpSpeedData")}
+      >
         <Text style={styles.btnText}>View Pump Duration Data</Text>
       </Pressable>
     </View>
@@ -93,22 +121,36 @@ export default function PumpControl({route}) {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    backgroundColor: "#E5E4DF",
+    height: "100%",
+  },
+  outerbox1: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "grey",
+    width: Dimensions.get("window").width * 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 0,
+    marginTop: 10,
+    paddingVertical: 12,
+    backgroundColor: "white",
   },
   div: {
     height: 40,
-    width: Dimensions.get("window").width * 0.9,
+    width: Dimensions.get("window").width * 0.7,
     backgroundColor: "#D7E8D7",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    elevation: 15,
   },
   divText: {
     fontSize: 16,
   },
   div2: {
     height: "auto",
-    width: Dimensions.get("window").width,
+    width: Dimensions.get("window").width * 0.8,
     backgroundColor: "green",
     // borderRadius: 10,
     alignItems: "center",
@@ -123,13 +165,12 @@ const styles = StyleSheet.create({
   btn: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 20,
-    elevation: 8,
+    elevation: 22,
     backgroundColor: "black",
-    marginTop: 40,
-    marginBottom: 30,
+    marginTop: 10,
   },
   btnText: {
     fontSize: 16,
@@ -137,5 +178,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
+  },
+  bar: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  boxes: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 10,
+  },
+  box1: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "black",
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderRadius: 10,
+    marginHorizontal: 15,
+    backgroundColor: "#E5E4DF"
+  },
+  box2: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderColor: "black",
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderRadius: 10,
+    marginHorizontal: 20,
   },
 });

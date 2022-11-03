@@ -1,13 +1,21 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-import { LineChart } from "react-native-chart-kit";
-
-export default function MoistureGraph() {
+// import { LineChart } from "react-native-chart-kit";
+// import {
+//   Chart,
+//   VerticalAxis,
+//   HorizontalAxis,
+//   Line,
+// } from "react-native-responsive-linechart";
+import * as Progress from "react-native-progress";
+export default function MoistureGraph({navigation}) {
   return (
     <View style={styles.container}>
-      <View style={styles.div}>
-        <Text style={styles.divText}>Live Moisture Level</Text>
+      <View style={styles.outerbox1}>
+        <View style={styles.div}>
+          <Text style={styles.divText}>Live Moisture Level</Text>
+        </View>
       </View>
-
+      {/* 
       <View>
   <Text>Bezier Line Chart</Text>
   <LineChart
@@ -53,9 +61,9 @@ export default function MoistureGraph() {
       borderRadius: 16
     }}
   />
-</View>
+</View> */}
 
-      <Pressable style={styles.btn}>
+      <Pressable style={styles.btn} onPress={()=>{navigation.navigate("moistureData")}}>
         <Text style={styles.btnText}>View Past Moisture Data</Text>
       </Pressable>
     </View>
@@ -64,15 +72,29 @@ export default function MoistureGraph() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
+    backgroundColor: "#E5E4DF",
+    height: "100%",
+  },
+  outerbox1: {
+    borderWidth: 1,
+    borderRadius: 8,
+    borderColor: "grey",
+    width: Dimensions.get("window").width * 0.9,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 0,
+    marginTop: 10,
+    paddingVertical: 12,
+    backgroundColor: "white",
   },
   div: {
     height: 40,
-    width: Dimensions.get("window").width * 0.9,
+    width: Dimensions.get("window").width * 0.7,
     backgroundColor: "#D7E8D7",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    elevation: 15,
   },
   divText: {
     fontSize: 16,
@@ -80,13 +102,12 @@ const styles = StyleSheet.create({
   btn: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 32,
     borderRadius: 20,
-    elevation: 8,
+    elevation: 22,
     backgroundColor: "black",
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 10,
   },
   btnText: {
     fontSize: 16,
