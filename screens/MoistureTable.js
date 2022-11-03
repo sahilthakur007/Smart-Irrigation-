@@ -1,7 +1,55 @@
+import { useEffect, useState } from "react";
 import { View, Text, Dimensions, StyleSheet } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
+import { getDatabase, ref, onValue, update, set } from "firebase/database"
+export default function PumpSpeedTable({route}) {
+  const db = route.params.db
+  console.log(db);
+  const [moisturedata,setmoituredata] = useState([])
+  useEffect(() => {
+    onValue(ref(db, '/Moisture_Table'), querySnapShot => {
+      let data = querySnapShot.val();
+      console.log(data)
+      let Date = [];
+      let Day = [];
+      let Time = [];
+      let Moi = []
+      for (const [key, value] of Object.entries(data.Date)) {
+        // console.log(key, value);
+        Date.push(value);
+      }
 
-export default function PumpSpeedTable() {
+      for (const [key, value] of Object.entries(data.Day)) {
+        // console.log(key, value);
+        Day.push(value);
+      }
+      for (const [key, value] of Object.entries(data.Time)) {
+        // console.log(key, value);
+        Time.push(value);
+      }
+      for (const [key, value] of Object.entries(data.Moisture)) {
+        // console.log(key, value);
+        Moi.push(value);
+      }
+      // console.log(Date)
+      // console.log(Day)
+      // console.log(Time)
+      // console.log(Moi)
+      let alldata = []; 
+      for (let i = 0; i < Day.length; i++)
+      {
+        const obj = {
+          Date: Date[i],
+          Time: Time[i],
+          Moisture: Moi[i],
+          
+        }
+        alldata.push(obj)
+      }
+      console.log(alldata)
+      setmoituredata(alldata)
+    })
+  },[])
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>
@@ -10,28 +58,12 @@ export default function PumpSpeedTable() {
         </View>
         <View style={{ margin: 15, height: "auto" }}>
           <DataTable
-            data={[
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "03/11/22","Time":"05:34:02", "Number of hours": 5},
-              {"Date": "04/11/22","Time":"06:35:03", "Number of hours": 6}, 
-            ]} // list of objects
-            colNames={["Date","Time","Number of hours"]} //List of Strings
+            data={moisturedata} // list of objects
+            colNames={["Date","Time","Moisture"]} //List of Strings
             colSettings={[
               { name: "Date", type: COL_TYPES.STRING, width: "40%" },
               { name: "Time", type: COL_TYPES.STRING, width: "30%" },
-              { name: "Number of hours", type: COL_TYPES.INT, width: "30%" },
+              { name: "Moisture", type: COL_TYPES.INT, width: "30%" },
             ]} //List of Objects
             noOfPages={1} //number
             backgroundColor={"white"} //Table Background Color
