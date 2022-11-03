@@ -13,7 +13,7 @@ import { getDatabase, ref, onValue, update, set } from "firebase/database"
 
 export default function MoistureContent({ route, navigation }) {
   const db = route.params.db
-
+  // console.log(db);
   const [moisture, setMoiture] = useState(0);
   const [isPumpOff, setisPumpOff] = useState(false);
   const [pumpSpeed, setPumpSpeed] = useState(0);

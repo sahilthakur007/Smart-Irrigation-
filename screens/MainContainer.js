@@ -13,11 +13,13 @@ import { firebaseConfig } from "../config"
 const Tab = createBottomTabNavigator();
 
 const PumpControlStack = createStackNavigator();
+const app = firebase.initializeApp(firebaseConfig)
+const db = getDatabase(app)
 function PumpControlStackScreen() {
  return (
    <PumpControlStack.Navigator>
-    <PumpControlStack.Screen options={{headerShown: false}} name="pumpControl" component={PumpControl} />             
-    <PumpControlStack.Screen options={{headerShown: false}} name="pumpSpeedData" component={PumpSpeedTable} />
+     <PumpControlStack.Screen options={{ headerShown: false }} name="pumpControl" component={PumpControl} initialParams={{ db }} />             
+     <PumpControlStack.Screen options={{ headerShown: false }} name="pumpSpeedData" component={PumpSpeedTable} initialParams={{ db }} />
    </PumpControlStack.Navigator>
   );
 }
@@ -25,15 +27,14 @@ const MoistureGraphStack = createStackNavigator();
 function MoistureGraphStackScreen() {
  return (
    <MoistureGraphStack.Navigator>
-    <MoistureGraphStack.Screen options={{headerShown: false}} name="moistureGraph" component={MoistureGraph} />             
-    <MoistureGraphStack.Screen options={{headerShown: false}} name="moistureData" component={MoistureTable} />
+     <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureGraph" component={MoistureGraph} initialParams={{ db }} />             
+     <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureData" component={MoistureTable} initialParams={{ db }} />
    </MoistureGraphStack.Navigator>
   );
 }
 
 export default function MainContainer() {
-  const app = firebase.initializeApp(firebaseConfig)
-  const db = getDatabase(app)
+  
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -61,9 +62,9 @@ export default function MainContainer() {
             tabBarStyle: {backgroundColor: 'black', height: 62}
           })}
           >
-          <Tab.Screen name="Moisture Content" component={MoistureContent} />
+          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams ={{db}}/>
           <Tab.Screen name="Pump Control" component={PumpControlStackScreen} />
-          <Tab.Screen name="Moisture Graph" component={MoistureGraphStackScreen} />
+          <Tab.Screen name="Moisture Graph" component={MoistureGraphStackScreen} initialParams={{ db }} />
         </Tab.Navigator>
       </NavigationContainer>
     );
