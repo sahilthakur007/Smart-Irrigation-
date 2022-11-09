@@ -1,68 +1,23 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
-// import { LineChart } from "react-native-chart-kit";
-// import {
-//   Chart,
-//   VerticalAxis,
-//   HorizontalAxis,
-//   Line,
-// } from "react-native-responsive-linechart";
-import * as Progress from "react-native-progress";
+import PureChart from 'react-native-pure-chart';
+
 export default function MoistureGraph({navigation}) {
+  const sampleData = [
+    {x: '2018-01-01', y: 30},
+    {x: '2018-01-02', y: 200},
+    {x: '2018-01-03', y: 170},
+    {x: '2018-01-04', y: 250},
+    {x: '2018-01-05', y: 10}
+]
+const data = [30, 200, 170, 250, 10] 
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>
         <View style={styles.div}>
           <Text style={styles.divText}>Live Moisture Level</Text>
         </View>
+       <PureChart data={sampleData} type='line' />
       </View>
-      {/* 
-      <View>
-  <Text>Bezier Line Chart</Text>
-  <LineChart
-    data={{
-      labels: ["January", "February", "March", "April", "May", "June"],
-      datasets: [
-        {
-          data: [
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100,
-            Math.random() * 100
-          ]
-        }
-      ]
-    }}
-    width={Dimensions.get("window").width} // from react-native
-    height={220}
-    yAxisLabel="$"
-    yAxisSuffix="k"
-    yAxisInterval={1} // optional, defaults to 1
-    chartConfig={{
-      backgroundColor: "#e26a00",
-      backgroundGradientFrom: "#fb8c00",
-      backgroundGradientTo: "#ffa726",
-      decimalPlaces: 2, // optional, defaults to 2dp
-      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      style: {
-        borderRadius: 16
-      },
-      propsForDots: {
-        r: "6",
-        strokeWidth: "2",
-        stroke: "#ffa726"
-      }
-    }}
-    bezier
-    style={{
-      marginVertical: 8,
-      borderRadius: 16
-    }}
-  />
-</View> */}
-
       <Pressable style={styles.btn} onPress={()=>{navigation.navigate("moistureData")}}>
         <Text style={styles.btnText}>View Past Moisture Data</Text>
       </Pressable>
@@ -95,6 +50,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     elevation: 15,
+    marginBottom: 50
   },
   divText: {
     fontSize: 16,
