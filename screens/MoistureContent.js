@@ -17,16 +17,26 @@ export default function MoistureContent({ route, navigation }) {
   const [moisture, setMoiture] = useState(0);
   const [isPumpOff, setisPumpOff] = useState(false);
   const [pumpSpeed, setPumpSpeed] = useState(0);
+  const [pumpStatus, setPumpStatus] =useState("Pump Off Manually")
   const handlePumpCondition = () => {
     if (isPumpOff) {
       setisPumpOff(false);
-      setbuttonstext("OFF")
-      set(ref(db, "/Pump Status"),false)
+      
+      //PUMP ON HERE 
+      set(ref(db, "/Pump Status"), false)
+     
+      set(ref(db, "/isOnManually"), true)
+      set(ref(db, "/isOffManually"), false)
+
     } else {
       setisPumpOff(true);
       set(ref(db, "/Pump Status"), true)
+      set(ref(db, "/isOffManually"), true)
+      set(ref(db, "/isOnManually"), false)
 
-      setbuttonstext("ON")
+
+        // PUMP OFF HERE 
+      
     }
   };
 
@@ -40,14 +50,35 @@ export default function MoistureContent({ route, navigation }) {
 
     onValue(ref(db, '/Pump Status'), querySnapShot => {
       let data = querySnapShot.val() ;
+      
       console.log(data)
-
       if (data == true) {
         setisPumpOff(true)
+        onValue(ref(db, '/isOffManually'), querySnapShot => {
+          let datav = querySnapShot.val();
+          if (datav==true)
+          {
+            setPumpStatus("Pump off Manually")
+            
+          }
+          else {
+            setPumpStatus("Pump off Automatically")
+          }
+        })
 
       }
       else {
         setisPumpOff(false)
+        onValue(ref(db, '/isOnManually'), querySnapShot => {
+          let datav = querySnapShot.val();
+          if (datav==true) {
+            setPumpStatus("Pump on Manually")
+
+          }
+          else {
+            setPumpStatus("Pump on Automatically")
+          }
+        })
       }
     })
 
@@ -96,7 +127,7 @@ export default function MoistureContent({ route, navigation }) {
         </View>
         <View style={styles.div2}>
           <Text style={styles.divText2}>
-            Currently pump is {!isPumpOff ? "ON" : "OFF"}
+           { pumpStatus}
           </Text>
         </View>
         {!isPumpOff ? (
