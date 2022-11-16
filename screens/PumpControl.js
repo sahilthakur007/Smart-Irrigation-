@@ -8,14 +8,23 @@ export default function PumpControl({ route, navigation }) {
   const [isPumpOff, setisPumpOff] = useState(true);
   const [pumpSpeed, setPumpSpeed] = useState(0);
   const [waterLevel, setWaterLevel] = useState(0.6);
+  const [pumpStatus, setPumpStatus] = useState("Pump Off Manually")
+
     const db = route.params.db
   const handlePumpCondition = () => {
     if (isPumpOff) {
       setisPumpOff(false);
       set(ref(db, "/Pump Status"), false)
+      set(ref(db, "/isOnManually"), true)
+      set(ref(db, "/isOffManually"), false)
+      setPumpStatus("Pump on Manually")
+
     } else {
       setisPumpOff(true);
       set(ref(db, "/Pump Status"), true)
+      set(ref(db, "/isOffManually"), true)
+      set(ref(db, "/isOnManually"), false)
+      setPumpStatus("Pump off Manually")
     }
     setPumpSpeed(0);
   };
@@ -27,10 +36,34 @@ export default function PumpControl({ route, navigation }) {
 
         if (data == true) {
           setisPumpOff(true)
+          onValue(ref(db, '/isOffManually'), querySnapShot => {
+            let datav = querySnapShot.val();
+            console.log("isOffManually = " + datav)
+            if (datav == true) {
+              setPumpStatus("Pump off Manually")
+
+            }
+            else {
+              setPumpStatus("Pump off Automatically")
+            }
+          })
 
         }
+
         else {
+
           setisPumpOff(false)
+          onValue(ref(db, '/isOnManually'), querySnapShot => {
+            let datav = querySnapShot.val();
+            console.log("isOnManually = " + datav)
+            if (datav == true) {
+              setPumpStatus("Pump on Manually")
+
+            }
+            else {
+              setPumpStatus("Pump on Automatically")
+            }
+          })
         }
       })
 
@@ -40,6 +73,13 @@ export default function PumpControl({ route, navigation }) {
         if (pumpSpeed==0)
           setPumpSpeed(data);
       })
+
+      onValue(ref(db, '/waterLeval'), querySnapShot => {
+        let data = querySnapShot.val();
+        console.log(data + " " + pumpSpeed)
+        setWaterLevel(data)
+      })
+
 
     }, [isPumpOff])
   const handlePumpSpeed = (value) => {
@@ -56,11 +96,11 @@ export default function PumpControl({ route, navigation }) {
         </View>
         <View style={styles.div2}>
           <Text style={styles.divText2}>
-            Currently pump is {!isPumpOff ? "ON" : "OFF"}
+            {pumpStatus}
           </Text>
         </View>
       </View>
-      <Pressable style={styles.btn} onPress={handlePumpCondition}>
+      <Pressable style={styles.btn} onPress={handlePumpCondition} disabled = {waterLevel==0?true:false}>
         <Text style={styles.btnText}>
           {!isPumpOff ? "TURN OFF PUMP" : "TURN ON PUMP"}
         </Text>
@@ -81,7 +121,7 @@ export default function PumpControl({ route, navigation }) {
             <Text style={{ fontSize: 20 }}>Water Level</Text>
           </View>
           <View style={styles.box2}>
-            <Text style={{ fontSize: 20,fontWeight: "bold" }}>{waterLevel * 100}%</Text>
+            <Text style={{ fontSize: 20,fontWeight: "bold" }}>{waterLevel}%</Text>
           </View>
         </View>
       </View>
@@ -98,7 +138,7 @@ export default function PumpControl({ route, navigation }) {
           thumbTintColor="green"
           value={pumpSpeed}
           onValueChange={handlePumpSpeed}
-          disabled={!isPumpOff ? false : true}
+          disabled={!isPumpOff||waterLevel!=0 ? false : true}
         />
         <View style={styles.boxes}>
           <View style={styles.box1}>
