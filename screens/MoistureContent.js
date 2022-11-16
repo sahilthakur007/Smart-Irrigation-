@@ -27,35 +27,47 @@ export default function MoistureContent({ route, navigation }) {
      
       set(ref(db, "/isOnManually"), true)
       set(ref(db, "/isOffManually"), false)
+      setPumpStatus("Pump on Manually")
+
 
     } else {
       setisPumpOff(true);
       set(ref(db, "/Pump Status"), true)
       set(ref(db, "/isOffManually"), true)
       set(ref(db, "/isOnManually"), false)
-
-
+      setPumpStatus("Pump off Manually")
         // PUMP OFF HERE 
       
     }
   };
 
   useEffect(() => {
+    let isOnManually; 
+    let isOffManually;
+
     onValue(ref(db, '/Moisture'), querySnapShot => {
       let data = querySnapShot.val();
       //  console.log(data)
       setMoiture(data);
 
     })
-
+    // onValue(ref(db, '/isOffManually'), querySnapShot => {
+    //   let isOffManually = querySnapShot.val()
+    //   print(isOffManually)
+    // })
+    // onValue(ref(db, '/isOnManually'), querySnapShot => {
+    //   let isOnManually = querySnapShot.val()
+    //   print(isOnManually)
+    // })
     onValue(ref(db, '/Pump Status'), querySnapShot => {
       let data = querySnapShot.val() ;
-      
-      console.log(data)
+      // console.log(data)
+      console.log("isoff = "+data)
       if (data == true) {
         setisPumpOff(true)
         onValue(ref(db, '/isOffManually'), querySnapShot => {
           let datav = querySnapShot.val();
+          console.log("isOffManually = "+datav)
           if (datav==true)
           {
             setPumpStatus("Pump off Manually")
@@ -67,10 +79,13 @@ export default function MoistureContent({ route, navigation }) {
         })
 
       }
+      
       else {
+        
         setisPumpOff(false)
         onValue(ref(db, '/isOnManually'), querySnapShot => {
           let datav = querySnapShot.val();
+          console.log("isOnManually = " + datav)
           if (datav==true) {
             setPumpStatus("Pump on Manually")
 
