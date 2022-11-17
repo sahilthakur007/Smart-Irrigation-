@@ -1,119 +1,157 @@
-import { StyleSheet,View,Text,TextInput,Pressable, Dimensions,} from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Dimensions,
+} from "react-native";
 import RNSpeedometer from "react-native-speedometer";
 import { useState, useEffect, useRef } from "react";
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import * as firebase from "firebase/app"
-import { getDatabase, ref, onValue, update, set } from "firebase/database"
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import * as firebase from "firebase/app";
+import { getDatabase, ref, onValue, update, set } from "firebase/database";
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: false,
-//     shouldSetBadge: false,
-//   }),
-// });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
-// async function schedulePushNotification() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "You've got an msg",
-//       body: 'Moisture sensing project',
-//       data: { data: 'Pump is ON' },
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
+async function scheduleNotificationPumpOnManually() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is ON",
+      body: "Pump is turned ON manually.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOffManually() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is OFF",
+      body: "Pump is turned OFF manually.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOnAutomatically() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is ON",
+      body: "Pump is turned ON automatically.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOffAutomatically() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is OFF",
+      body: "Pump is turned OFF automatically.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
 
-// async function registerForPushNotificationsAsync() {
-//   let token;
-//   if (Platform.OS === 'android') {
-//     await Notifications.setNotificationChannelAsync('default', {
-//       name: 'default',
-//       importance: Notifications.AndroidImportance.MAX,
-//       vibrationPattern: [0, 250, 250, 250],
-//       lightColor: '#FF231F7C',
-//     });
-//   }
-//   if (Device.isDevice) {
-//     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-//     let finalStatus = existingStatus;
-//     if (existingStatus !== 'granted') {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       finalStatus = status;
-//     }
-//     if (finalStatus !== 'granted') {
-//       alert('Turn on the notification permission from settings to get notifications.');
-//       return;
-//     }
-//     token = (await Notifications.getExpoPushTokenAsync()).data;
-//     console.log(token);
-//   } else {
-//     alert('Must use physical device for Push Notifications');
-//   }
-//   return token;
-// }
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert(
+        "Turn on the notification permission from settings to get notifications."
+      );
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+  return token;
+}
 
 export default function MoistureContent({ route, navigation }) {
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
-  // const [expoPushToken, setExpoPushToken] = useState('');
-  // const [notification, setNotification] = useState(false);
-  // const notificationListener = useRef();
-  // const responseListener = useRef();
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-  //   notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-  //     setNotification(notification);
-  //   });
-  //   responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-  //     console.log(response);
-  //   });
-  //   return () => {
-  //     Notifications.removeNotificationSubscription(notificationListener.current);
-  //     Notifications.removeNotificationSubscription(responseListener.current);
-  //   };
-  // }, []);
-
-  const db = route.params.db
+  const db = route.params.db;
   // console.log(db);
   const [moisture, setMoiture] = useState(0);
   const [isPumpOff, setisPumpOff] = useState(false);
   const [pumpSpeed, setPumpSpeed] = useState(0);
-  const [pumpStatus, setPumpStatus] =useState("Pump Off Manually")
+  const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
   const handlePumpCondition = () => {
-    // schedulePushNotification();
     if (isPumpOff) {
       setisPumpOff(false);
-      
-      //PUMP ON HERE 
-      set(ref(db, "/Pump Status"), false)
-     
-      set(ref(db, "/isOnManually"), true)
-      set(ref(db, "/isOffManually"), false)
-      setPumpStatus("Pump on Manually")
 
+      //PUMP ON HERE
+      set(ref(db, "/Pump Status"), false);
 
+      set(ref(db, "/isOnManually"), true);
+      set(ref(db, "/isOffManually"), false);
+      setPumpStatus("Pump on Manually");
     } else {
       setisPumpOff(true);
-      set(ref(db, "/Pump Status"), true)
-      set(ref(db, "/isOffManually"), true)
-      set(ref(db, "/isOnManually"), false)
-      setPumpStatus("Pump off Manually")
-        // PUMP OFF HERE 
-      
+      set(ref(db, "/Pump Status"), true);
+      set(ref(db, "/isOffManually"), true);
+      set(ref(db, "/isOnManually"), false);
+      setPumpStatus("Pump off Manually");
+      // PUMP OFF HERE
     }
+    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
   };
 
   useEffect(() => {
-    let isOnManually; 
+    let isOnManually;
     let isOffManually;
 
-    onValue(ref(db, '/Moisture'), querySnapShot => {
+    onValue(ref(db, "/Moisture"), (querySnapShot) => {
       let data = querySnapShot.val();
       //  console.log(data)
       setMoiture(data);
-
-    })
+    });
     // onValue(ref(db, '/isOffManually'), querySnapShot => {
     //   let isOffManually = querySnapShot.val()
     //   print(isOffManually)
@@ -122,54 +160,44 @@ export default function MoistureContent({ route, navigation }) {
     //   let isOnManually = querySnapShot.val()
     //   print(isOnManually)
     // })
-    onValue(ref(db, '/Pump Status'), querySnapShot => {
-      let data = querySnapShot.val() ;
-      // console.log(data)
-      console.log("isoff = "+data)
-      if (data == true) {
-        setisPumpOff(true)
-        onValue(ref(db, '/isOffManually'), querySnapShot => {
-          let datav = querySnapShot.val();
-          console.log("isOffManually = "+datav)
-          if (datav==true)
-          {
-            setPumpStatus("Pump off Manually")
-            
-          }
-          else {
-            setPumpStatus("Pump off Automatically")
-          }
-        })
-
-      }
-      
-      else {
-        
-        setisPumpOff(false)
-        onValue(ref(db, '/isOnManually'), querySnapShot => {
-          let datav = querySnapShot.val();
-          console.log("isOnManually = " + datav)
-          if (datav==true) {
-            setPumpStatus("Pump on Manually")
-
-          }
-          else {
-            setPumpStatus("Pump on Automatically")
-          }
-        })
-      }
-    })
-
-    onValue(ref(db, '/Motar speed'), querySnapShot => {
+    onValue(ref(db, "/Pump Status"), (querySnapShot) => {
       let data = querySnapShot.val();
-      console.log(data)
-        if(data)
-          setPumpSpeed(data);
-      else setPumpSpeed(0)
+      // console.log(data)
+      console.log("isoff = " + data);
+      if (data == true) {
+        setisPumpOff(true);
+        onValue(ref(db, "/isOffManually"), (querySnapShot) => {
+          let datav = querySnapShot.val();
+          console.log("isOffManually = " + datav);
+          if (datav == true) {
+            setPumpStatus("Pump off Manually");
+          } else {
+            setPumpStatus("Pump off Automatically");
+          }
+        });
+      } else {
+        setisPumpOff(false);
+        onValue(ref(db, "/isOnManually"), (querySnapShot) => {
+          let datav = querySnapShot.val();
+          console.log("isOnManually = " + datav);
+          if (datav == true) {
+            setPumpStatus("Pump on Manually");
+          } else {
+            setPumpStatus("Pump on Automatically");
+          }
+        });
+      }
+      if (pumpStatus == "Pump off Automatically") scheduleNotificationPumpOnAutomatically();
+      else if (pumpStatus == "Pump on Automatically") scheduleNotificationPumpOffAutomatically();
+    });
 
-    })
-
-  }, [])
+    onValue(ref(db, "/Motar speed"), (querySnapShot) => {
+      let data = querySnapShot.val();
+      console.log(data);
+      if (data) setPumpSpeed(data);
+      else setPumpSpeed(0);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -204,9 +232,7 @@ export default function MoistureContent({ route, navigation }) {
           <Text style={styles.divText}>Current Pump Status</Text>
         </View>
         <View style={styles.div2}>
-          <Text style={styles.divText2}>
-           { pumpStatus}
-          </Text>
+          <Text style={styles.divText2}>{pumpStatus}</Text>
         </View>
         {!isPumpOff ? (
           <View style={styles.boxes}>
@@ -214,7 +240,9 @@ export default function MoistureContent({ route, navigation }) {
               <Text style={{ fontSize: 20 }}>Pump Speed</Text>
             </View>
             <View style={styles.box2}>
-              <Text style={{ fontSize: 20,fontWeight: "bold" }}>{pumpSpeed}</Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                {pumpSpeed}
+              </Text>
             </View>
           </View>
         ) : null}
@@ -317,7 +345,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     marginHorizontal: 15,
-    backgroundColor: "#E5E4DF"
+    backgroundColor: "#E5E4DF",
   },
   box2: {
     alignItems: "center",
