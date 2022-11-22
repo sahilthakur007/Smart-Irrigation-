@@ -91,6 +91,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function MoistureContent({ route, navigation }) {
+  const [sendNotification, setSendNotification]=useState(false)
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -139,8 +140,9 @@ export default function MoistureContent({ route, navigation }) {
       setPumpStatus("Pump off Manually");
       // PUMP OFF HERE
     }
-    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
-    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
+    setSendNotification(true)
+    if (pumpStatus == "Pump off Manually" && sendNotification) scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually" && sendNotification) scheduleNotificationPumpOffManually();
   };
 
   useEffect(() => {
@@ -211,7 +213,11 @@ export default function MoistureContent({ route, navigation }) {
           maxValue={100}
           size={250}
           wrapperStyle={{ paddingTop: 30 }}
-          labels={[{ name: "level", activeBarColor: "green" }]}
+          labels={[{ name: "Lower Moisture Level", activeBarColor: "#81D37F" },
+          { name: "Low Moisture Level", activeBarColor: "#48B645" },
+          { name: "Medium Moisture Level", activeBarColor: "#20861C" },
+          { name: "High Moisture Level", activeBarColor: "#146311" },
+          { name: "Higher Moisture Level", activeBarColor: "#0D490B" }]}
         />
       </View>
 
@@ -295,7 +301,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 15,
+    elevation: 12,
   },
   divText: {
     fontSize: 16,
@@ -346,6 +352,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 15,
     backgroundColor: "#E5E4DF",
+    elevation: 4,
   },
   box2: {
     alignItems: "center",

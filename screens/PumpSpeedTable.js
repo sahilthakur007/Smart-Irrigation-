@@ -1,7 +1,22 @@
-import { View, Text, Dimensions, StyleSheet } from "react-native";
+import { View, Text, Dimensions, StyleSheet,ScrollView } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
 
 export default function PumpSpeedTable() {
+  const pumpData=[{"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  {"Date": "04/11/22", "Time": 6,"Status": "Automatic Off"}]
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>
@@ -10,27 +25,12 @@ export default function PumpSpeedTable() {
         </View>
         <View style={{ margin: 15, height: "auto" }}>
           <DataTable
-            data={[
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "03/11/22", "Number of hours": 5},
-              {"Date": "04/11/22", "Number of hours": 6}, 
-            ]} // list of objects
-            colNames={["Date","Number of hours"]} //List of Strings
+            data={pumpData} // list of objects
+            colNames={["Date","Time","Status"]} //List of Strings
             colSettings={[
-              { name: "Date", type: COL_TYPES.STRING, width: "50%" },
-              { name: "Number of hours", type: COL_TYPES.INT, width: "50%" },
+              { name: "Date", type: COL_TYPES.STRING, width: "32%" },
+              { name: "Time", type: COL_TYPES.INT, width: "28%" },
+              { name: "Status", type: COL_TYPES.STRING, width: "40%" },
             ]} //List of Objects
             noOfPages={1} //number
             backgroundColor={"white"} //Table Background Color
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 15,
+    elevation: 12,
     marginTop: 36
   },
   divText: {

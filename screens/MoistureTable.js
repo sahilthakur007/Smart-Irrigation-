@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 15,
+    elevation: 12,
     marginTop: 36
   },
   divText: {

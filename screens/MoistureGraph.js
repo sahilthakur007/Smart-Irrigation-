@@ -19,7 +19,7 @@ const data = [30, 200, 170, 250, 10]
        <PureChart data={sampleData} type='line' />
       </View>
       <Pressable style={styles.btn} onPress={()=>{navigation.navigate("moistureData")}}>
-        <Text style={styles.btnText}>View Past Moisture Data</Text>
+        <Text style={styles.btnText}>View Moisture Data</Text>
       </Pressable>
     </View>
   );
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 15,
+    elevation: 12,
     marginBottom: 50
   },
   divText: {

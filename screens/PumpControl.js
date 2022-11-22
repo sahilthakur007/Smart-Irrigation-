@@ -18,7 +18,7 @@ async function scheduleNotificationPumpOnManually() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Pump is ON",
-      body: "Pump is turned ON manually.",
+      body: "Pump is turned ON manually.pc",
     },
     trigger: { seconds: 1 },
   });
@@ -27,7 +27,7 @@ async function scheduleNotificationPumpOffManually() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Pump is OFF",
-      body: "Pump is turned OFF manually.",
+      body: "Pump is turned OFF manually.pc",
     },
     trigger: { seconds: 1 },
   });
@@ -36,7 +36,7 @@ async function scheduleNotificationPumpOnAutomatically() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Pump is ON",
-      body: "Pump is turned ON automatically.",
+      body: "Pump is turned ON automatically.pc",
     },
     trigger: { seconds: 1 },
   });
@@ -45,7 +45,7 @@ async function scheduleNotificationPumpOffAutomatically() {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Pump is OFF",
-      body: "Pump is turned OFF automatically.",
+      body: "Pump is turned OFF automatically.pc",
     },
     trigger: { seconds: 1 },
   });
@@ -93,6 +93,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function PumpControl({ route, navigation }) {
+  const [sendNotification, setSendNotification]=useState(false)
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -140,8 +141,9 @@ export default function PumpControl({ route, navigation }) {
       setPumpStatus("Pump off Manually")
     }
     setPumpSpeed(0);
-    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
-    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
+    setSendNotification(true)
+    if (pumpStatus == "Pump off Manually" && sendNotification) scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually" && sendNotification) scheduleNotificationPumpOffManually();
   };
     useEffect(() => {
 
@@ -270,7 +272,7 @@ export default function PumpControl({ route, navigation }) {
         style={styles.btn}
         onPress={() => navigation.navigate("pumpSpeedData")}
       >
-        <Text style={styles.btnText}>View Pump Duration Data</Text>
+        <Text style={styles.btnText}>View Pump Data</Text>
       </Pressable>
     </View>
   );
@@ -300,7 +302,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 15,
+    elevation: 12,
   },
   divText: {
     fontSize: 16,
@@ -353,7 +355,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     marginHorizontal: 15,
-    backgroundColor: "#E5E4DF"
+    backgroundColor: "#E5E4DF",
+    elevation: 4,
   },
   box2: {
     alignItems: "center",
