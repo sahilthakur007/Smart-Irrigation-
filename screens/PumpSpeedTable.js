@@ -1,22 +1,66 @@
+import { useEffect, useState } from "react";
 import { View, Text, Dimensions, StyleSheet,ScrollView } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
 
 export default function PumpSpeedTable() {
-  const pumpData=[{"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  {"Date": "04/11/22", "Time": 6,"Status": "Automatic Off"}]
+  const [pumpData,setPumpData] = useState([])
+  // const pumpData=[{"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
+  // {"Date": "04/11/22", "Time": 6,"Status": "Automatic Off"}]
+
+
+
+  useEffect(() => {
+    onValue(ref(db, '/Moisture_Table'), querySnapShot => {
+      let data = querySnapShot.val();
+      console.log(data)
+      let Date = [];
+      let Time = [];
+      let Status = []
+      for (const [key, value] of Object.entries(data.date)) {
+        Date.push(value);
+      }
+
+
+      for (const [key, value] of Object.entries(data.time)) {
+        // console.log(key, value);
+        Time.push(value);
+      }
+      for (const [key, value] of Object.entries(data.status)) {
+        // console.log(key, value);
+        Status.push(value);
+      }
+      // console.log(Date)
+      // console.log(Day)
+      // console.log(Time)
+      // console.log(Moi)
+      let alldata = [];
+      for (let i = 0; i < Day.length; i++) {
+        const obj = {
+          Date: Date[i],
+          Time: Time[i],
+          Status: Status[i],
+
+        }
+        alldata.push(obj)
+      }
+      console.log(alldata)
+      setPumpData(alldata);
+    })
+
+  })
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>

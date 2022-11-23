@@ -133,12 +133,29 @@ export default function PumpControl({ route, navigation }) {
       set(ref(db, "/isOffManually"), false)
       setPumpStatus("Pump on Manually")
 
+      //pump table entries
+
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      set(ref(db, "/pumpData/date"), Date.now());
+      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      set(ref(db, "/pumpData/status"), " Manually ON");
+
     } else {
       setisPumpOff(true);
       set(ref(db, "/Pump Status"), true)
       set(ref(db, "/isOffManually"), true)
       set(ref(db, "/isOnManually"), false)
       setPumpStatus("Pump off Manually")
+
+      //pump table entries 
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      set(ref(db, "/pumpData/date"), Date.now());
+      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      set(ref(db, "/pumpData/status"), " Manually OFF");
     }
     setPumpSpeed(0);
     setSendNotification(true)

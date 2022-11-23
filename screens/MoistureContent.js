@@ -132,6 +132,16 @@ export default function MoistureContent({ route, navigation }) {
       set(ref(db, "/isOnManually"), true);
       set(ref(db, "/isOffManually"), false);
       setPumpStatus("Pump on Manually");
+
+      // entries to pum table
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      set(ref(db, "/pumpData/date"), Date.now());
+      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      set(ref(db, "/pumpData/status"), " Manually ON");
+      // set(ref(db, "/pumpData/"), "Manually");
+
     } else {
       setisPumpOff(true);
       set(ref(db, "/Pump Status"), true);
@@ -139,6 +149,16 @@ export default function MoistureContent({ route, navigation }) {
       set(ref(db, "/isOnManually"), false);
       setPumpStatus("Pump off Manually");
       // PUMP OFF HERE
+
+      // entries in pump table
+
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      set(ref(db, "/pumpData/date"), Date.now());
+      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      set(ref(db, "/pumpData/status"), "Manually OFF");
+      // set(ref(db, "/pumpData/"), "Manually");
     }
     setSendNotification(true)
     if (pumpStatus == "Pump off Manually" && sendNotification) scheduleNotificationPumpOnManually();
