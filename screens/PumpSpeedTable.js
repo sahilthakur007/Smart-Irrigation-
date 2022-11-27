@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { View, Text, Dimensions, StyleSheet,ScrollView } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
+import { ref, onValue } from "firebase/database"
 
-export default function PumpSpeedTable() {
-  const [pumpData,setPumpData] = useState([])
+export default function PumpSpeedTable({ route }) {
+  const [pumpData, setPumpData] = useState([])
+  const db = route.params.db
   // const pumpData=[{"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
   // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
   // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
@@ -23,8 +25,9 @@ export default function PumpSpeedTable() {
 
 
   useEffect(() => {
-    onValue(ref(db, '/Moisture_Table'), querySnapShot => {
+    onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
+      console.log(data)
       console.log(data)
       let Date = [];
       let Time = [];
@@ -47,7 +50,7 @@ export default function PumpSpeedTable() {
       // console.log(Time)
       // console.log(Moi)
       let alldata = [];
-      for (let i = 0; i < Day.length; i++) {
+      for (let i = 0; i < Date.length; i++) {
         const obj = {
           Date: Date[i],
           Time: Time[i],

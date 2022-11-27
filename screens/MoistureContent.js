@@ -11,7 +11,7 @@ import { useState, useEffect, useRef } from "react";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import * as firebase from "firebase/app";
-import { getDatabase, ref, onValue, update, set } from "firebase/database";
+import { getDatabase, ref, onValue, update, set,push } from "firebase/database";
 
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
@@ -137,9 +137,9 @@ export default function MoistureContent({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      set(ref(db, "/pumpData/date"), Date.now());
-      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
-      set(ref(db, "/pumpData/status"), " Manually ON");
+      push(ref(db, "/pumpData/date"), Date.now());
+      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      push(ref(db, "/pumpData/status"), " Manually ON");
       // set(ref(db, "/pumpData/"), "Manually");
 
     } else {
@@ -155,9 +155,9 @@ export default function MoistureContent({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      set(ref(db, "/pumpData/date"), Date.now());
-      set(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
-      set(ref(db, "/pumpData/status"), "Manually OFF");
+      push(ref(db, "/pumpData/date"), Date.now());
+      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      push(ref(db, "/pumpData/status"), "Manually OFF");
       // set(ref(db, "/pumpData/"), "Manually");
     }
     // setSendNotification(true)
