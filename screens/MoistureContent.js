@@ -91,7 +91,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function MoistureContent({ route, navigation }) {
-  const [sendNotification, setSendNotification]=useState(false)
+  // const [sendNotification, setSendNotification]=useState(false)
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -160,9 +160,9 @@ export default function MoistureContent({ route, navigation }) {
       set(ref(db, "/pumpData/status"), "Manually OFF");
       // set(ref(db, "/pumpData/"), "Manually");
     }
-    setSendNotification(true)
-    if (pumpStatus == "Pump off Manually" && sendNotification) scheduleNotificationPumpOnManually();
-    else if (pumpStatus == "Pump on Manually" && sendNotification) scheduleNotificationPumpOffManually();
+    // setSendNotification(true)
+    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
   };
 
   useEffect(() => {

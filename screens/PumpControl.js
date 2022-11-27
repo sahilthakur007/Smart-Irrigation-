@@ -93,7 +93,7 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function PumpControl({ route, navigation }) {
-  const [sendNotification, setSendNotification]=useState(false)
+  // const [sendNotification, setSendNotification]=useState(false)
   const [expoPushToken, setExpoPushToken] = useState("");
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef();
@@ -158,9 +158,9 @@ export default function PumpControl({ route, navigation }) {
       set(ref(db, "/pumpData/status"), " Manually OFF");
     }
     setPumpSpeed(0);
-    setSendNotification(true)
-    if (pumpStatus == "Pump off Manually" && sendNotification) scheduleNotificationPumpOnManually();
-    else if (pumpStatus == "Pump on Manually" && sendNotification) scheduleNotificationPumpOffManually();
+    // setSendNotification(true)
+    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
   };
     useEffect(() => {
 
