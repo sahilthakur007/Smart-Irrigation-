@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PumpControl from './PumpControl';
-import MoistureGraph from './MoistureGraph';
+// import MoistureGraph from './MoistureGraph';
 import MoistureContent from './MoistureContent';
 import MoistureTable from './MoistureTable';
 import PumpSpeedTable from './PumpSpeedTable';
@@ -23,15 +23,15 @@ function PumpControlStackScreen() {
    </PumpControlStack.Navigator>
   );
 }
-const MoistureGraphStack = createStackNavigator();
-function MoistureGraphStackScreen() {
- return (
-   <MoistureGraphStack.Navigator>
-     <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureGraph" component={MoistureGraph} initialParams={{ db }} />             
-     <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureData" component={MoistureTable} initialParams={{ db }} />
-   </MoistureGraphStack.Navigator>
-  );
-}
+// const MoistureGraphStack = createStackNavigator();
+// function MoistureGraphStackScreen() {
+//  return (
+//    <MoistureGraphStack.Navigator>
+//      <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureGraph" component={MoistureGraph} initialParams={{ db }} />             
+//      <MoistureGraphStack.Screen options={{ headerShown: false }} name="moistureData" component={MoistureTable} initialParams={{ db }} />
+//    </MoistureGraphStack.Navigator>
+//   );
+// }
 
 export default function MainContainer() {
    
@@ -45,7 +45,7 @@ export default function MainContainer() {
                 iconName = 'home-outline'
               } else if (route.name === 'Pump Control') {
                 iconName ='options-outline'
-              } else if (route.name === 'Moisture Graph') {
+              } else if (route.name === 'Moisture Data') {
                 iconName ='bar-chart-outline'
               }
               return <Ionicons name={iconName} size={size} color={color} />;
@@ -64,7 +64,7 @@ export default function MainContainer() {
           >
           <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams ={{db}}/>
           <Tab.Screen name="Pump Control" component={PumpControlStackScreen} />
-          <Tab.Screen name="Moisture Graph" component={MoistureGraphStackScreen} initialParams={{ db }} />
+          <Tab.Screen name="Moisture Data" component={MoistureTable} initialParams={{ db }} />
         </Tab.Navigator>
       </NavigationContainer>
     );

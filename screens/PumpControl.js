@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import { useState, useEffect, useRef } from "react";
-import Slider from "@react-native-community/slider";
+// import Slider from "@react-native-community/slider";
+import { Slider } from "react-native-range-slider-expo";
 import * as Progress from "react-native-progress";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
@@ -265,7 +266,7 @@ export default function PumpControl({ route, navigation }) {
         <View style={styles.div}>
           <Text style={styles.divText}>Control Pump Speed</Text>
         </View>
-        <Slider
+        {/* <Slider
           style={{ width: 300, height: 100, marginBottom: -20 }}
           minimumValue={0}
           maximumValue={255}
@@ -275,8 +276,20 @@ export default function PumpControl({ route, navigation }) {
           value={pumpSpeed}
           onValueChange={handlePumpSpeed}
           disabled={!isPumpOff||waterLevel!=0 ? false : true}
+        /> */}
+        <Slider
+          min={0}
+          max={255}
+          containerStyle={{ width: 300}}
+          valueOnChange={handlePumpSpeed}
+          initialValue={12}
+          knobColor="green"
+          valueLabelsBackgroundColor="black"
+          inRangeBarColor="grey"
+          outOfRangeBarColor="green"
+          barHeight={8}
         />
-        <View style={styles.boxes}>
+        <View style={styles.boxes2}>
           <View style={styles.box1}>
             <Text style={{ fontSize: 20}}>Pump Speed</Text>
           </View>
@@ -363,6 +376,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     marginBottom: 10,
+  },
+  boxes2: {
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: 5,
+    marginTop: 100,
   },
   box1: {
     alignItems: "center",
