@@ -11,25 +11,18 @@ export default function PumpSpeedTable({ route }) {
     onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
       console.log(data)
-      console.log(data)
+      // console.log(data)
       let Date = [];
       let Time = [];
       let Status = []
       for (const [key, value] of Object.entries(data.date)) {
-        var date = new window.Date(value);
-        // console.log(date);
-        let d=date.getDate() + "-"+ parseInt(date.getMonth()+1) +"-"+date.getFullYear();
-        let t=date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        console.log(t);
-        // console.log(d)
-        Date.push(d);
-        Time.push(t);
+        Date.push(value)
       }
 
-      // for (const [key, value] of Object.entries(data.time)) {
-      //   // console.log(key, value);
-      //   Time.push(value);
-      // }
+      for (const [key, value] of Object.entries(data.time)) {
+        // console.log(key, value);
+        Time.push(value);
+      }
       for (const [key, value] of Object.entries(data.status)) {
         // console.log(key, value);
         Status.push(value);
@@ -49,7 +42,7 @@ export default function PumpSpeedTable({ route }) {
         }
         alldata.push(obj)
       }
-      console.log(alldata)
+      // console.log(alldata)
       setPumpData(alldata);
     })
 

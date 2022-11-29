@@ -139,9 +139,12 @@ export default function PumpControl({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
-      push(ref(db, "/pumpData/status"), " Manually ON");
+      var d=new Date().getDate();
+      var m=new Date().getMonth()+1;
+      var y=new Date().getFullYear();
+      push(ref(db, "/pumpData/date"),`${d} ${m} ${y}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      push(ref(db, "/pumpData/status"), "Manually ON");
 
     } else {
       setisPumpOff(true);
@@ -154,9 +157,12 @@ export default function PumpControl({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
-      push(ref(db, "/pumpData/status"), " Manually OFF");
+      var d=new Date().getDate();
+      var m=new Date().getMonth()+1;
+      var y=new Date().getFullYear();
+      push(ref(db, "/pumpData/date"),`${d} ${m} ${y}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      push(ref(db, "/pumpData/status"), "Manually OFF");
     }
     setPumpSpeed(0);
     // setSendNotification(true)
@@ -247,7 +253,7 @@ export default function PumpControl({ route, navigation }) {
           <Text style={styles.divText}>Current Water Level</Text>
         </View>
         <Progress.Bar
-          progress={waterLevel}
+          progress={waterLevel/100}
           width={200}
           height={18}
           color={"grey"}

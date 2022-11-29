@@ -137,9 +137,12 @@ export default function MoistureContent({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
-      push(ref(db, "/pumpData/status"), " Manually ON");
+      var d=new Date().getDate();
+      var m=new Date().getMonth()+1;
+      var y=new Date().getFullYear();
+      push(ref(db, "/pumpData/date"),`${d} ${m} ${y}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      push(ref(db, "/pumpData/status"), "Manually ON");
       // set(ref(db, "/pumpData/"), "Manually");
 
     } else {
@@ -155,8 +158,11 @@ export default function MoistureContent({ route, navigation }) {
       var hours = new Date().getHours(); //To get the Current Hours
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      var d=new Date().getDate();
+      var m=new Date().getMonth()+1;
+      var y=new Date().getFullYear();
+      push(ref(db, "/pumpData/date"),`${d} ${m} ${y}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
       push(ref(db, "/pumpData/status"), "Manually OFF");
       // set(ref(db, "/pumpData/"), "Manually");
     }
