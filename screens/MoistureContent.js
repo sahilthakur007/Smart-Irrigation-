@@ -237,7 +237,7 @@ export default function MoistureContent({ route, navigation }) {
           value={moisture}
           minValue={0}
           maxValue={100}
-          size={250}
+          size={Dimensions.get("window").width * 0.65}
           wrapperStyle={{ paddingTop: 30 }}
           labels={[{ name: "Lower Moisture Level", activeBarColor: "#81D37F" },
           { name: "Low Moisture Level", activeBarColor: "#48B645" },
@@ -266,7 +266,7 @@ export default function MoistureContent({ route, navigation }) {
         <View style={styles.div2}>
           <Text style={styles.divText2}>{pumpStatus}</Text>
         </View>
-        {!isPumpOff ? (
+        {/* {!isPumpOff ? (
           <View style={styles.boxes}>
             <View style={styles.box1}>
               <Text style={{ fontSize: 20 }}>Pump Speed</Text>
@@ -277,7 +277,7 @@ export default function MoistureContent({ route, navigation }) {
               </Text>
             </View>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
     </View>
   );
@@ -289,28 +289,28 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   outerbox1: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     borderColor: "grey",
     width: Dimensions.get("window").width * 0.9,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 0,
-    marginTop: 10,
-    paddingTop: 12,
-    paddingBottom: 114,
+    marginTop: Dimensions.get("window").height * 0.02,
+    paddingTop: Dimensions.get("window").height * 0.015,
+    paddingBottom: Dimensions.get("window").height * 0.16,
     backgroundColor: "white",
   },
   outerbox2: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     borderColor: "grey",
     width: Dimensions.get("window").width * 0.9,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 0,
-    marginTop: 10,
-    paddingVertical: 12,
+    marginTop: Dimensions.get("window").height * 0.005,
+    paddingVertical: Dimensions.get("window").height * 0.015,
     backgroundColor: "white",
   },
   textInput: {
@@ -321,16 +321,17 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
   },
   div: {
-    height: 40,
+    height:Dimensions.get("window").height * 0.06,
     width: Dimensions.get("window").width * 0.7,
     backgroundColor: "#D7E8D7",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     elevation: 12,
+    marginTop: Dimensions.get("window").height * 0.01,
   },
   divText: {
-    fontSize: 16,
+    fontSize: Dimensions.get("window").height * 0.022,
   },
   div2: {
     height: "auto",
@@ -339,22 +340,23 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: Dimensions.get("window").height * 0.04,
+    marginBottom: Dimensions.get("window").height * 0.015,
     padding: 8,
   },
   divText2: {
-    fontSize: 20,
+    fontSize: Dimensions.get("window").height * 0.026,
     color: "white",
   },
   btn: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 32,
+    paddingVertical: Dimensions.get("window").height * 0.015,
+    paddingHorizontal: Dimensions.get("window").width * 0.1,
     borderRadius: 20,
     elevation: 22,
     backgroundColor: "black",
-    marginVertical: 20,
+    marginVertical: Dimensions.get("window").height * 0.04,
   },
   btnText: {
     fontSize: 16,
