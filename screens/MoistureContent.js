@@ -13,108 +13,108 @@ import * as Notifications from "expo-notifications";
 import * as firebase from "firebase/app";
 import { getDatabase, ref, onValue, update, set,push } from "firebase/database";
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: false,
-//     shouldSetBadge: false,
-//   }),
-// });
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
-// async function scheduleNotificationPumpOnManually() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is ON",
-//       body: "Pump is turned ON manually.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOffManually() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is OFF",
-//       body: "Pump is turned OFF manually.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOnAutomatically() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is ON",
-//       body: "Pump is turned ON automatically.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOffAutomatically() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is OFF",
-//       body: "Pump is turned OFF automatically.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
+async function scheduleNotificationPumpOnManually() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is ON",
+      body: "Pump is turned ON manually.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOffManually() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is OFF",
+      body: "Pump is turned OFF manually.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOnAutomatically() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is ON",
+      body: "Pump is turned ON automatically.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
+async function scheduleNotificationPumpOffAutomatically() {
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: "Pump is OFF",
+      body: "Pump is turned OFF automatically.",
+    },
+    trigger: { seconds: 1 },
+  });
+}
 
-// async function registerForPushNotificationsAsync() {
-//   let token;
-//   if (Platform.OS === "android") {
-//     await Notifications.setNotificationChannelAsync("default", {
-//       name: "default",
-//       importance: Notifications.AndroidImportance.MAX,
-//       vibrationPattern: [0, 250, 250, 250],
-//       lightColor: "#FF231F7C",
-//     });
-//   }
-//   if (Device.isDevice) {
-//     const { status: existingStatus } =
-//       await Notifications.getPermissionsAsync();
-//     let finalStatus = existingStatus;
-//     if (existingStatus !== "granted") {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       finalStatus = status;
-//     }
-//     if (finalStatus !== "granted") {
-//       alert(
-//         "Turn on the notification permission from settings to get notifications."
-//       );
-//       return;
-//     }
-//     token = (await Notifications.getExpoPushTokenAsync()).data;
-//     console.log(token);
-//   } else {
-//     alert("Must use physical device for Push Notifications");
-//   }
-//   return token;
-// }
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Platform.OS === "android") {
+    await Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== "granted") {
+      alert(
+        "Turn on the notification permission from settings to get notifications."
+      );
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    alert("Must use physical device for Push Notifications");
+  }
+  return token;
+}
 
 export default function MoistureContent({ route, navigation }) {
-  // const [sendNotification, setSendNotification]=useState(false)
-  // const [expoPushToken, setExpoPushToken] = useState("");
-  // const [notification, setNotification] = useState(false);
-  // const notificationListener = useRef();
-  // const responseListener = useRef();
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync().then((token) =>
-  //     setExpoPushToken(token)
-  //   );
-  //   notificationListener.current =
-  //     Notifications.addNotificationReceivedListener((notification) => {
-  //       setNotification(notification);
-  //     });
-  //   responseListener.current =
-  //     Notifications.addNotificationResponseReceivedListener((response) => {
-  //       console.log(response);
-  //     });
-  //   return () => {
-  //     Notifications.removeNotificationSubscription(
-  //       notificationListener.current
-  //     );
-  //     Notifications.removeNotificationSubscription(responseListener.current);
-  //   };
-  // }, []);
+  const [sendNotification, setSendNotification]=useState(false)
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   const db = route.params.db;
   // console.log(db);
@@ -166,9 +166,9 @@ export default function MoistureContent({ route, navigation }) {
       push(ref(db, "/pumpData/status"), "Manually OFF");
       // set(ref(db, "/pumpData/"), "Manually");
     }
-    // setSendNotification(true)
-    // if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
-    // else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
+    setSendNotification(true)
+    if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
   };
 
   useEffect(() => {
@@ -215,8 +215,8 @@ export default function MoistureContent({ route, navigation }) {
           }
         });
       }
-      // if (pumpStatus == "Pump off Automatically") scheduleNotificationPumpOnAutomatically();
-      // else if (pumpStatus == "Pump on Automatically") scheduleNotificationPumpOffAutomatically();
+      if (pumpStatus == "Pump off Automatically") scheduleNotificationPumpOnAutomatically();
+      else if (pumpStatus == "Pump on Automatically") scheduleNotificationPumpOffAutomatically();
     });
 
     onValue(ref(db, "/Motar speed"), (querySnapShot) => {
