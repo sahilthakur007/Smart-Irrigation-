@@ -112,7 +112,7 @@ const styles= StyleSheet.create({
   header: {
     backgroundColor: 'black',
     width: '100%',
-    height: '6%',
+    height: '7%',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: Constants.statusBarHeight,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, Text, Dimensions, StyleSheet,ScrollView } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
-import { ref, onValue } from "firebase/database"
+import { ref, onValue } from "firebase/database";
 
 export default function PumpSpeedTable({ route }) {
   const [pumpData, setPumpData] = useState([])
@@ -10,14 +10,13 @@ export default function PumpSpeedTable({ route }) {
     onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
       console.log(data)
-      console.log(data)
+      // console.log(data)
       let Date = [];
       let Time = [];
       let Status = []
       for (const [key, value] of Object.entries(data.date)) {
-        Date.push(value);
+        Date.push(value)
       }
-
 
       for (const [key, value] of Object.entries(data.time)) {
         // console.log(key, value);
@@ -33,6 +32,7 @@ export default function PumpSpeedTable({ route }) {
       // console.log(Moi)
       let alldata = [];
       for (let i = 0; i < Date.length; i++) {
+        // console.log(Date(Date[i]).toString());
         const obj = {
           Date: Date[i],
           Time: Time[i],
@@ -41,11 +41,11 @@ export default function PumpSpeedTable({ route }) {
         }
         alldata.push(obj)
       }
-      console.log(alldata)
+      // console.log(alldata)
       setPumpData(alldata);
     })
 
-  },[])
+  }, [])
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>
@@ -57,9 +57,9 @@ export default function PumpSpeedTable({ route }) {
             data={pumpData} // list of objects
             colNames={["Date","Time","Status"]} //List of Strings
             colSettings={[
-              { name: "Date", type: COL_TYPES.STRING, width: "32%" },
-              { name: "Time", type: COL_TYPES.INT, width: "28%" },
-              { name: "Status", type: COL_TYPES.STRING, width: "40%" },
+              { name: "Date", type: COL_TYPES.STRING, width: "36%" },
+              { name: "Time", type: COL_TYPES.INT, width: "30%" },
+              { name: "Status", type: COL_TYPES.STRING, width: "34%" },
             ]} //List of Objects
             noOfPages={1} //number
             backgroundColor={"white"} //Table Background Color

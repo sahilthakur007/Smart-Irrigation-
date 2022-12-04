@@ -1,22 +1,71 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import PureChart from 'react-native-pure-chart';
+import { useEffect, useState } from "react";
+import { getDatabase, ref, onValue, update, set } from "firebase/database"
 
-export default function MoistureGraph({navigation}) {
-  const sampleData = [
-    {x: '2018-01-01', y: 30},
-    {x: '2018-01-02', y: 200},
-    {x: '2018-01-03', y: 170},
-    {x: '2018-01-04', y: 250},
-    {x: '2018-01-05', y: 10}
-]
-const data = [30, 200, 170, 250, 10] 
+export default function MoistureGraph({route,navigation}) {
+//   const sampleData = [
+//     {x: '2018-01-01', y: 30},
+//     {x: '2018-01-02', y: 200},
+//     {x: '2018-01-03', y: 170},
+//     {x: '2018-01-04', y: 250},
+//     {x: '2018-01-05', y: 10}
+// ]
+// const data = [30, 200, 170, 250, 10] 
+const db = route.params.db
+  console.log(db);
+  const [moisturedata,setmoituredata] = useState([])
+  useEffect(() => {
+    onValue(ref(db, '/Moisture_Table'), querySnapShot => {
+      let data = querySnapShot.val();
+      console.log(data)
+      let Date = [];
+      let Day = [];
+      let Time = [];
+      let Moi = []
+      for (const [key, value] of Object.entries(data.Date)) {
+        // console.log(key, value);
+        Date.push(value);
+      }
+
+      for (const [key, value] of Object.entries(data.Day)) {
+        // console.log(key, value);
+        Day.push(value);
+      }
+      for (const [key, value] of Object.entries(data.Time)) {
+        // console.log(key, value);
+        Time.push(value);
+      }
+      for (const [key, value] of Object.entries(data.Moisture)) {
+        // console.log(key, value);
+        Moi.push(value);
+      }
+      // console.log(Date)
+      // console.log(Day)
+      // console.log(Time)
+      // console.log(Moi)
+      let alldata = []; 
+      for (let i = 0; i < Day.length; i++)
+      {
+        const obj = {
+          // x: Date[i],
+          x: Time[i],
+          y: Moi[i],
+          
+        }
+        alldata.push(obj)
+      }
+      console.log(alldata)
+      setmoituredata(alldata)
+    })
+  },[])
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>
         <View style={styles.div}>
           <Text style={styles.divText}>Live Moisture Level</Text>
         </View>
-       <PureChart data={sampleData} type='line' />
+       <PureChart data={moisturedata} type='line' width={50}/>
       </View>
       <Pressable style={styles.btn} onPress={()=>{navigation.navigate("moistureData")}}>
         <Text style={styles.btnText}>View Moisture Data</Text>

@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import RNSpeedometer from "react-native-speedometer";
 import { useState, useEffect, useRef } from "react";
-import * as Device from "expo-device";
-import * as Notifications from "expo-notifications";
+// import * as Device from "expo-device";
+// import * as Notifications from "expo-notifications";
 import * as firebase from "firebase/app";
 import { getDatabase, ref, onValue, update, set,push } from "firebase/database";
 
@@ -119,9 +119,10 @@ export default function MoistureContent({ route, navigation }) {
   const db = route.params.db;
   // console.log(db);
   const [moisture, setMoiture] = useState(0);
-  const [isPumpOff, setisPumpOff] = useState(false);
+  // const [isPumpOff, setisPumpOff] = useState(false);
   const [pumpSpeed, setPumpSpeed] = useState(0);
-  const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
+  // const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
+
 
   
   useEffect(() => {
@@ -146,25 +147,25 @@ export default function MoistureContent({ route, navigation }) {
       // console.log(data)
       console.log("isoff = " + data);
       if (data == true) {
-        setisPumpOff(true);
+        route.params.setisPumpOff(true);
         onValue(ref(db, "/isOffManually"), (querySnapShot) => {
           let datav = querySnapShot.val();
           console.log("isOffManually = " + datav);
           if (datav == true) {
-            setPumpStatus("Pump off Manually");
+            route.params.setPumpStatus("Pump off Manually");
           } else {
-            setPumpStatus("Pump off Automatically");
+            route.params.setPumpStatus("Pump off Automatically");
           }
         });
       } else {
-        setisPumpOff(false);
+        route.params.setisPumpOff(false);
         onValue(ref(db, "/isOnManually"), (querySnapShot) => {
           let datav = querySnapShot.val();
           console.log("isOnManually = " + datav);
           if (datav == true) {
-            setPumpStatus("Pump on Manually");
+            route.params.setPumpStatus("Pump on Manually");
           } else {
-            setPumpStatus("Pump on Automatically");
+            route.params.setPumpStatus("Pump on Automatically");
           }
         });
       }
@@ -190,7 +191,7 @@ export default function MoistureContent({ route, navigation }) {
           value={moisture}
           minValue={0}
           maxValue={100}
-          size={250}
+          size={Dimensions.get("window").width * 0.65}
           wrapperStyle={{ paddingTop: 30 }}
           labels={[{ name: "Lower Moisture Level", activeBarColor: "#81D37F" },
           { name: "Low Moisture Level", activeBarColor: "#48B645" },
@@ -207,9 +208,9 @@ export default function MoistureContent({ route, navigation }) {
           onChangeText={(value) => setMeterValue(parseInt(value))}
         /> */}
 
-      <Pressable style={styles.btn} onPress={handlePumpCondition}>
+      <Pressable style={styles.btn} onPress={route.params.handlePumpCondition}>
         <Text style={styles.btnText}>
-          {isPumpOff ? "TURN ON PUMP" : "TURN OFF PUMP"}
+          {route.params.isPumpOff ? "TURN ON PUMP" : "TURN OFF PUMP"}
         </Text>
       </Pressable>
       <View style={styles.outerbox2}>
@@ -217,9 +218,9 @@ export default function MoistureContent({ route, navigation }) {
           <Text style={styles.divText}>Current Pump Status</Text>
         </View>
         <View style={styles.div2}>
-          <Text style={styles.divText2}>{pumpStatus}</Text>
+          <Text style={styles.divText2}>{route.params.pumpStatus}</Text>
         </View>
-        {!isPumpOff ? (
+        {/* {!isPumpOff ? (
           <View style={styles.boxes}>
             <View style={styles.box1}>
               <Text style={{ fontSize: 20 }}>Pump Speed</Text>
@@ -230,7 +231,7 @@ export default function MoistureContent({ route, navigation }) {
               </Text>
             </View>
           </View>
-        ) : null}
+        ) : null} */}
       </View>
     </View>
   );
@@ -242,28 +243,28 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   outerbox1: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     borderColor: "grey",
     width: Dimensions.get("window").width * 0.9,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 0,
-    marginTop: 10,
-    paddingTop: 12,
-    paddingBottom: 114,
+    marginTop: Dimensions.get("window").height * 0.02,
+    paddingTop: Dimensions.get("window").height * 0.015,
+    paddingBottom: Dimensions.get("window").height * 0.16,
     backgroundColor: "white",
   },
   outerbox2: {
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     borderColor: "grey",
     width: Dimensions.get("window").width * 0.9,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 0,
-    marginTop: 10,
-    paddingVertical: 12,
+    marginTop: Dimensions.get("window").height * 0.005,
+    paddingVertical: Dimensions.get("window").height * 0.015,
     backgroundColor: "white",
   },
   textInput: {
@@ -274,16 +275,17 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
   },
   div: {
-    height: 40,
+    height:Dimensions.get("window").height * 0.06,
     width: Dimensions.get("window").width * 0.7,
     backgroundColor: "#D7E8D7",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     elevation: 12,
+    marginTop: Dimensions.get("window").height * 0.01,
   },
   divText: {
-    fontSize: 16,
+    fontSize: Dimensions.get("window").height * 0.022,
   },
   div2: {
     height: "auto",
@@ -292,22 +294,23 @@ const styles = StyleSheet.create({
     // borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
+    marginTop: Dimensions.get("window").height * 0.04,
+    marginBottom: Dimensions.get("window").height * 0.015,
     padding: 8,
   },
   divText2: {
-    fontSize: 20,
+    fontSize: Dimensions.get("window").height * 0.026,
     color: "white",
   },
   btn: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 32,
+    paddingVertical: Dimensions.get("window").height * 0.015,
+    paddingHorizontal: Dimensions.get("window").width * 0.1,
     borderRadius: 20,
     elevation: 22,
     backgroundColor: "black",
-    marginVertical: 20,
+    marginVertical: Dimensions.get("window").height * 0.04,
   },
   btnText: {
     fontSize: 16,
