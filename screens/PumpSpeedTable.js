@@ -6,24 +6,6 @@ import { ref, onValue } from "firebase/database"
 export default function PumpSpeedTable({ route }) {
   const [pumpData, setPumpData] = useState([])
   const db = route.params.db
-  // const pumpData=[{"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "03/11/22", "Time": 5,"Status": "Manual On"},
-  // {"Date": "04/11/22", "Time": 6,"Status": "Automatic Off"}]
-
-
-
   useEffect(() => {
     onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
@@ -63,7 +45,7 @@ export default function PumpSpeedTable({ route }) {
       setPumpData(alldata);
     })
 
-  })
+  },[])
   return (
     <View style={styles.container}>
       <View style={styles.outerbox1}>

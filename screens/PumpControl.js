@@ -139,7 +139,7 @@ export default function PumpControl({ route, navigation }) {
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
       push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
       push(ref(db, "/pumpData/status"), " Manually ON");
 
     } else {
@@ -154,7 +154,7 @@ export default function PumpControl({ route, navigation }) {
       var min = new Date().getMinutes(); //To get the Current Minutes
       var sec = new Date().getSeconds();
       push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}/${min}/${sec}`);
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
       push(ref(db, "/pumpData/status"), " Manually OFF");
     }
     setPumpSpeed(0);
