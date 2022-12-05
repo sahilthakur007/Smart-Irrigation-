@@ -9,40 +9,44 @@ export default function PumpSpeedTable({ route }) {
   useEffect(() => {
     onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
+      
       console.log(data)
       // console.log(data)
-      let Date = [];
-      let Time = [];
-      let Status = []
-      for (const [key, value] of Object.entries(data.date)) {
-        Date.push(value)
-      }
-
-      for (const [key, value] of Object.entries(data.time)) {
-        // console.log(key, value);
-        Time.push(value);
-      }
-      for (const [key, value] of Object.entries(data.status)) {
-        // console.log(key, value);
-        Status.push(value);
-      }
-      // console.log(Date)
-      // console.log(Day)
-      // console.log(Time)
-      // console.log(Moi)
-      let alldata = [];
-      for (let i = 0; i < Date.length; i++) {
-        // console.log(Date(Date[i]).toString());
-        const obj = {
-          Date: Date[i],
-          Time: Time[i],
-          Status: Status[i],
-
+      if (data)
+      {
+        let Date = [];
+        let Time = [];
+        let Status = []
+        for (const [key, value] of Object.entries(data.date)) {
+          Date.push(value)
         }
-        alldata.push(obj)
-      }
-      // console.log(alldata)
-      setPumpData(alldata);
+
+        for (const [key, value] of Object.entries(data.time)) {
+          // console.log(key, value);
+          Time.push(value);
+        }
+        for (const [key, value] of Object.entries(data.status)) {
+          // console.log(key, value);
+          Status.push(value);
+        }
+        // console.log(Date)
+        // console.log(Day)
+        // console.log(Time)
+        // console.log(Moi)
+        let alldata = [];
+        for (let i = 0; i < Date.length; i++) {
+          // console.log(Date(Date[i]).toString());
+          const obj = {
+            Date: Date[i],
+            Time: Time[i],
+            Status: Status[i],
+
+          }
+          alldata.push(obj)
+        }
+        // console.log(alldata)
+        setPumpData(alldata);
+        }
     })
 
   }, [])

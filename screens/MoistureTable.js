@@ -9,45 +9,47 @@ export default function PumpSpeedTable({route}) {
   useEffect(() => {
     onValue(ref(db, '/Moisture_Table'), querySnapShot => {
       let data = querySnapShot.val();
-      console.log(data)
-      let Date = [];
-      let Day = [];
-      let Time = [];
-      let Moi = []
-      for (const [key, value] of Object.entries(data.Date)) {
-        // console.log(key, value);
-        Date.push(value);
-      }
-
-      for (const [key, value] of Object.entries(data.Day)) {
-        // console.log(key, value);
-        Day.push(value);
-      }
-      for (const [key, value] of Object.entries(data.Time)) {
-        // console.log(key, value);
-        Time.push(value);
-      }
-      for (const [key, value] of Object.entries(data.Moisture)) {
-        // console.log(key, value);
-        Moi.push(value);
-      }
-      // console.log(Date)
-      // console.log(Day)
-      // console.log(Time)
-      // console.log(Moi)
-      let alldata = []; 
-      for (let i = 0; i < Day.length; i++)
+      if (data)
       {
-        const obj = {
-          Date: Date[i],
-          Time: Time[i],
-          Moisture: Moi[i],
-          
+        console.log(data)
+        let Date = [];
+        let Day = [];
+        let Time = [];
+        let Moi = []
+        for (const [key, value] of Object.entries(data.Date)) {
+          // console.log(key, value);
+          Date.push(value);
         }
-        alldata.push(obj)
-      }
-      console.log(alldata)
-      setmoituredata(alldata)
+
+        for (const [key, value] of Object.entries(data.Day)) {
+          // console.log(key, value);
+          Day.push(value);
+        }
+        for (const [key, value] of Object.entries(data.Time)) {
+          // console.log(key, value);
+          Time.push(value);
+        }
+        for (const [key, value] of Object.entries(data.Moisture)) {
+          // console.log(key, value);
+          Moi.push(value);
+        }
+        // console.log(Date)
+        // console.log(Day)
+        // console.log(Time)
+        // console.log(Moi)
+        let alldata = [];
+        for (let i = 0; i < Day.length; i++) {
+          const obj = {
+            Date: Date[i],
+            Time: Time[i],
+            Moisture: Moi[i],
+
+          }
+          alldata.push(obj)
+        }
+        console.log(alldata)
+        setmoituredata(alldata)
+        }
     })
   },[])
   return (
