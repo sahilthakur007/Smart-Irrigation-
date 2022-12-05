@@ -12,7 +12,7 @@ export default function PumpSpeedTable({ route }) {
       
       console.log(data)
       // console.log(data)
-      if (data)
+      if (data!=null)
       {
         let Date = [];
         let Time = [];

@@ -9,7 +9,7 @@ export default function PumpSpeedTable({route}) {
   useEffect(() => {
     onValue(ref(db, '/Moisture_Table'), querySnapShot => {
       let data = querySnapShot.val();
-      if (data)
+      if (data !=null)
       {
         console.log(data)
         let Date = [];
