@@ -26,7 +26,7 @@ function PumpControlStackScreen({route}) {
   const setisPumpOff = route.params.setisPumpOff
   const pumpStatus = route.params.pumpStatus
   const setPumpStatus = route.params.setPumpStatus
-
+  
  return (
    <PumpControlStack.Navigator>
      <PumpControlStack.Screen options={{ headerShown: false }} name="pumpControl" component={PumpControl} initialParams={{db , isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus }} />             
@@ -45,50 +45,7 @@ function PumpControlStackScreen({route}) {
 // }
 
 export default function MainContainer() {
-  const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
-  const [isPumpOff, setisPumpOff] = useState(false);
-  const handlePumpCondition = () => {
-    if (isPumpOff) {
-      setisPumpOff(false);
-
-      //PUMP ON HERE
-      set(ref(db, "/Pump Status"), false);
-
-      set(ref(db, "/isOnManually"), true);
-      set(ref(db, "/isOffManually"), false);
-      setPumpStatus("Pump on Manually");
-
-      // entries to pum table
-      var hours = new Date().getHours(); //To get the Current Hours
-      var min = new Date().getMinutes(); //To get the Current Minutes
-      var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
-      push(ref(db, "/pumpData/status"), " Manually ON");
-      // set(ref(db, "/pumpData/"), "Manually");
-
-    } else {
-      setisPumpOff(true);
-      set(ref(db, "/Pump Status"), true);
-      set(ref(db, "/isOffManually"), true);
-      set(ref(db, "/isOnManually"), false);
-      setPumpStatus("Pump off Manually");
-      // PUMP OFF HERE
-
-      // entries in pump table
-
-      var hours = new Date().getHours(); //To get the Current Hours
-      var min = new Date().getMinutes(); //To get the Current Minutes
-      var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
-      push(ref(db, "/pumpData/status"), "Manually OFF");
-      // set(ref(db, "/pumpData/"), "Manually");
-    }
-    // setSendNotification(true)
-    // if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
-    // else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
-  };
+ 
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -116,8 +73,8 @@ export default function MainContainer() {
             tabBarStyle: {backgroundColor: 'black', height: 62}
           })}
           >
-          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db, isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus}}/>
-          <Tab.Screen name="Pump Control" component={PumpControlStackScreen} initialParams={{ db, isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus }} />
+          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db}}/>
+          <Tab.Screen name="Pump Control" component={PumpControlStackScreen} initialParams={{ db }} />
           <Tab.Screen name="Moisture Data" component={MoistureTable} initialParams={{ db }} />
         </Tab.Navigator>
       </NavigationContainer>

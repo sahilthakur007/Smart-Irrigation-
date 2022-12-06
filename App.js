@@ -92,16 +92,20 @@ import Constants from "expo-constants";
 import * as firebase from "firebase/app"
 import { getDatabase, ref, onValue, update, set } from "firebase/database"
 import { firebaseConfig } from "./config"
+import { Provider } from 'react-redux';
+import store from "./Redux/store"
 export default function App() {
   // const app = firebase.initializeApp(firebaseConfig)
   // const db = getDatabase(app)
   return (
+    <Provider store={store}>
     <View style={styles.container}>
       <View style={styles.header}>
           <Text style={styles.headerText}>Smart Irrigation</Text>
       </View>
       <MainContainer />
-    </View>
+      </View>
+    </Provider>
   );
 }
 

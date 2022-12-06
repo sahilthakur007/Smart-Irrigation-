@@ -12,7 +12,8 @@ import { useState, useEffect, useRef } from "react";
 // import * as Notifications from "expo-notifications";
 import * as firebase from "firebase/app";
 import { getDatabase, ref, onValue, update, set,push } from "firebase/database";
-
+import { useSelector, useDispatch } from "react-redux";
+import { updatePumpCondition } from "../Redux/Action/pumpSatus";
 // Notifications.setNotificationHandler({
 //   handleNotification: async () => ({
 //     shouldShowAlert: true,
@@ -123,7 +124,62 @@ export default function MoistureContent({ route, navigation }) {
   const [pumpSpeed, setPumpSpeed] = useState(0);
   // const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
 
+  const dispatch = useDispatch()
+  const { pumpStatus, isPumpOff } = useSelector((state) => state.pumpStateReducer)
 
+  // const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
+  // const [isPumpOff, setisPumpOff] = useState(false);
+
+  const handlePumpCondition = () => {
+    // console.log(message)
+    console.log("yes")
+    if (isPumpOff) {
+      // setisPumpOff(false);
+
+      //PUMP ON HERE
+      set(ref(db, "/Pump Status"), false);
+
+      set(ref(db, "/isOnManually"), true);
+      set(ref(db, "/isOffManually"), false);
+      // setPumpStatus("Pump on Manually");
+      // entries to pum table
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      push(ref(db, "/pumpData/date"), Date.now());
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      push(ref(db, "/pumpData/status"), " Manually ON");
+      // set(ref(db, "/pumpData/"), "Manually");
+      dispatch(updatePumpCondition("Pump on Manually", false))
+
+
+    } else {
+
+      // setisPumpOff(true);
+      set(ref(db, "/Pump Status"), true);
+      set(ref(db, "/isOffManually"), true);
+      set(ref(db, "/isOnManually"), false);
+      // setPumpStatus("Pump off Manually");
+      // PUMP OFF HERE
+
+      // entries in pump table
+
+      var hours = new Date().getHours(); //To get the Current Hours
+      var min = new Date().getMinutes(); //To get the Current Minutes
+      var sec = new Date().getSeconds();
+      push(ref(db, "/pumpData/date"), Date.now());
+      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      push(ref(db, "/pumpData/status"), "Manually OFF");
+      // set(ref(db, "/pumpData/"), "Manually");
+      dispatch(updatePumpCondition("Pump off Manually", true))
+
+    }
+
+
+    // setSendNotification(true)
+    // if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
+    // else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
+  };
   
   useEffect(() => {
     let isOnManually;
@@ -147,25 +203,32 @@ export default function MoistureContent({ route, navigation }) {
       // console.log(data)
       console.log("isoff = " + data);
       if (data == true) {
-        route.params.setisPumpOff(true);
+        // setisPumpOff(true);
         onValue(ref(db, "/isOffManually"), (querySnapShot) => {
           let datav = querySnapShot.val();
           console.log("isOffManually = " + datav);
           if (datav == true) {
-            route.params.setPumpStatus("Pump off Manually");
+          //  setPumpStatus("Pump off Manually");
+            dispatch(updatePumpCondition("Pump off Manually", true))
           } else {
-            route.params.setPumpStatus("Pump off Automatically");
+            // setPumpStatus("Pump off Automatically");
+            dispatch(updatePumpCondition("Pump off Automatically", true))
+
           }
         });
       } else {
-        route.params.setisPumpOff(false);
+        // setisPumpOff(false);
         onValue(ref(db, "/isOnManually"), (querySnapShot) => {
           let datav = querySnapShot.val();
           console.log("isOnManually = " + datav);
           if (datav == true) {
-            route.params.setPumpStatus("Pump on Manually");
+            // setPumpStatus("Pump on Manually");
+            dispatch(updatePumpCondition("Pump on Manually", false))
+
           } else {
-            route.params.setPumpStatus("Pump on Automatically");
+            // setPumpStatus("Pump on Automatically");
+            dispatch(updatePumpCondition("Pump on Automatically", false))
+
           }
         });
       }
@@ -208,9 +271,9 @@ export default function MoistureContent({ route, navigation }) {
           onChangeText={(value) => setMeterValue(parseInt(value))}
         /> */}
 
-      <Pressable style={styles.btn} onPress={route.params.handlePumpCondition}>
+      <Pressable style={styles.btn} onPress={handlePumpCondition}>
         <Text style={styles.btnText}>
-          {route.params.isPumpOff ? "TURN ON PUMP" : "TURN OFF PUMP"}
+          {isPumpOff ? "TURN ON PUMP" : "TURN OFF PUMP"}
         </Text>
       </Pressable>
       <View style={styles.outerbox2}>
@@ -218,7 +281,7 @@ export default function MoistureContent({ route, navigation }) {
           <Text style={styles.divText}>Current Pump Status</Text>
         </View>
         <View style={styles.div2}>
-          <Text style={styles.divText2}>{route.params.pumpStatus}</Text>
+          <Text style={styles.divText2}>{pumpStatus}</Text>
         </View>
         {/* {!isPumpOff ? (
           <View style={styles.boxes}>
