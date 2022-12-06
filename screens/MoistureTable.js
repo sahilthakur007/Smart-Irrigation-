@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { View, Text, Dimensions, StyleSheet } from "react-native";
 import DataTable, { COL_TYPES } from "react-native-datatable-component";
 import { getDatabase, ref, onValue, update, set } from "firebase/database"
-export default function PumpSpeedTable({route}) {
+export default function MoistureTable({route}) {
   const db = route.params.db
-  console.log(db);
+  // console.log(db);
   const [moisturedata,setmoituredata] = useState([])
   useEffect(() => {
     onValue(ref(db, '/Moisture_Table'), querySnapShot => {
@@ -47,7 +47,7 @@ export default function PumpSpeedTable({route}) {
           }
           alldata.push(obj)
         }
-        console.log(alldata)
+        // console.log(alldata)
         setmoituredata(alldata)
         }
     })

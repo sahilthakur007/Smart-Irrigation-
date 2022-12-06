@@ -10,7 +10,7 @@ export default function PumpSpeedTable({ route }) {
     onValue(ref(db, '/pumpData'), querySnapShot => {
       let data = querySnapShot.val();
       
-      console.log(data)
+      // console.log(data)
       // console.log(data)
       if (data!=null)
       {

@@ -48,6 +48,7 @@ export default function MainContainer() {
   const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
   const [isPumpOff, setisPumpOff] = useState(false);
   const handlePumpCondition = () => {
+    console.log("hello...");
     if (isPumpOff) {
       setisPumpOff(false);
 
@@ -59,11 +60,15 @@ export default function MainContainer() {
       setPumpStatus("Pump on Manually");
 
       // entries to pum table
-      var hours = new Date().getHours(); //To get the Current Hours
-      var min = new Date().getMinutes(); //To get the Current Minutes
-      var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      var MyDate= new Date();
+      var MyDateString = ('0' + MyDate.getDate()).slice(-2) + ' '
+             + ('0' + (MyDate.getMonth()+1)).slice(-2) + ' '
+             + MyDate.getFullYear();
+      var MyTimeString = ('0' + MyDate.getHours()).slice(-2) + ':'
+             + ('0' + (MyDate.getMinutes())).slice(-2) + ':'
+             + ('0' + (MyDate.getSeconds())).slice(-2);
+      push(ref(db, "/pumpData/date"), MyDateString);
+      push(ref(db, "/pumpData/time"), MyTimeString);
       push(ref(db, "/pumpData/status"), " Manually ON");
       // set(ref(db, "/pumpData/"), "Manually");
 
@@ -77,11 +82,15 @@ export default function MainContainer() {
 
       // entries in pump table
 
-      var hours = new Date().getHours(); //To get the Current Hours
-      var min = new Date().getMinutes(); //To get the Current Minutes
-      var sec = new Date().getSeconds();
-      push(ref(db, "/pumpData/date"), Date.now());
-      push(ref(db, "/pumpData/time"), `${hours}:${min}:${sec}`);
+      var MyDate= new Date();
+      var MyDateString = ('0' + MyDate.getDate()).slice(-2) + ' '
+             + ('0' + (MyDate.getMonth()+1)).slice(-2) + ' '
+             + MyDate.getFullYear();
+      var MyTimeString = ('0' + MyDate.getHours()).slice(-2) + ':'
+             + ('0' + (MyDate.getMinutes())).slice(-2) + ':'
+             + ('0' + (MyDate.getSeconds())).slice(-2);
+      push(ref(db, "/pumpData/date"), MyDateString);
+      push(ref(db, "/pumpData/time"), MyTimeString);
       push(ref(db, "/pumpData/status"), "Manually OFF");
       // set(ref(db, "/pumpData/"), "Manually");
     }
@@ -116,7 +125,7 @@ export default function MainContainer() {
             tabBarStyle: {backgroundColor: 'black', height: 62}
           })}
           >
-          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db, isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus}}/>
+          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db, isPumpOff,handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus}}/>
           <Tab.Screen name="Pump Control" component={PumpControlStackScreen} initialParams={{ db, isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus }} />
           <Tab.Screen name="Moisture Data" component={MoistureTable} initialParams={{ db }} />
         </Tab.Navigator>
