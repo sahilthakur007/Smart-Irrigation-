@@ -3,15 +3,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import PumpControl from './PumpControl';
-// import MoistureGraph from './MoistureGraph';
 import MoistureContent from './MoistureContent';
 import MoistureTable from './MoistureTable';
 import PumpSpeedTable from './PumpSpeedTable';
 import * as firebase from "firebase/app"
 import { firebaseConfig } from "../config"
-import { useState, useEffect, useRef } from "react";
-// import * as Device from "expo-device";
-// import * as Notifications from "expo-notifications";
 import { getDatabase, ref, onValue, update, set, push } from "firebase/database"
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +22,7 @@ function PumpControlStackScreen({route}) {
   const setisPumpOff = route.params.setisPumpOff
   const pumpStatus = route.params.pumpStatus
   const setPumpStatus = route.params.setPumpStatus
-
+  
  return (
    <PumpControlStack.Navigator>
      <PumpControlStack.Screen options={{ headerShown: false }} name="pumpControl" component={PumpControl} initialParams={{db , isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus }} />             
@@ -45,59 +41,7 @@ function PumpControlStackScreen({route}) {
 // }
 
 export default function MainContainer() {
-  const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
-  const [isPumpOff, setisPumpOff] = useState(false);
-  const handlePumpCondition = () => {
-    console.log("hello...");
-    if (isPumpOff) {
-      setisPumpOff(false);
-
-      //PUMP ON HERE
-      set(ref(db, "/Pump Status"), false);
-
-      set(ref(db, "/isOnManually"), true);
-      set(ref(db, "/isOffManually"), false);
-      setPumpStatus("Pump on Manually");
-
-      // entries to pum table
-      var MyDate= new Date();
-      var MyDateString = ('0' + MyDate.getDate()).slice(-2) + ' '
-             + ('0' + (MyDate.getMonth()+1)).slice(-2) + ' '
-             + MyDate.getFullYear();
-      var MyTimeString = ('0' + MyDate.getHours()).slice(-2) + ':'
-             + ('0' + (MyDate.getMinutes())).slice(-2) + ':'
-             + ('0' + (MyDate.getSeconds())).slice(-2);
-      push(ref(db, "/pumpData/date"), MyDateString);
-      push(ref(db, "/pumpData/time"), MyTimeString);
-      push(ref(db, "/pumpData/status"), " Manually ON");
-      // set(ref(db, "/pumpData/"), "Manually");
-
-    } else {
-      setisPumpOff(true);
-      set(ref(db, "/Pump Status"), true);
-      set(ref(db, "/isOffManually"), true);
-      set(ref(db, "/isOnManually"), false);
-      setPumpStatus("Pump off Manually");
-      // PUMP OFF HERE
-
-      // entries in pump table
-
-      var MyDate= new Date();
-      var MyDateString = ('0' + MyDate.getDate()).slice(-2) + ' '
-             + ('0' + (MyDate.getMonth()+1)).slice(-2) + ' '
-             + MyDate.getFullYear();
-      var MyTimeString = ('0' + MyDate.getHours()).slice(-2) + ':'
-             + ('0' + (MyDate.getMinutes())).slice(-2) + ':'
-             + ('0' + (MyDate.getSeconds())).slice(-2);
-      push(ref(db, "/pumpData/date"), MyDateString);
-      push(ref(db, "/pumpData/time"), MyTimeString);
-      push(ref(db, "/pumpData/status"), "Manually OFF");
-      // set(ref(db, "/pumpData/"), "Manually");
-    }
-    // setSendNotification(true)
-    // if (pumpStatus == "Pump off Manually") scheduleNotificationPumpOnManually();
-    // else if (pumpStatus == "Pump on Manually") scheduleNotificationPumpOffManually();
-  };
+ 
     return (
       <NavigationContainer>
         <Tab.Navigator
@@ -125,8 +69,8 @@ export default function MainContainer() {
             tabBarStyle: {backgroundColor: 'black', height: 62}
           })}
           >
-          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db, isPumpOff,handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus}}/>
-          <Tab.Screen name="Pump Control" component={PumpControlStackScreen} initialParams={{ db, isPumpOff, handlePumpCondition, setisPumpOff, pumpStatus, setPumpStatus }} />
+          <Tab.Screen name="Moisture Content" component={MoistureContent} initialParams={{ db}}/>
+          <Tab.Screen name="Pump Control" component={PumpControlStackScreen} initialParams={{ db }} />
           <Tab.Screen name="Moisture Data" component={MoistureTable} initialParams={{ db }} />
         </Tab.Navigator>
       </NavigationContainer>

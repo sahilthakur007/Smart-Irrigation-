@@ -4,14 +4,6 @@ import { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, update, set } from "firebase/database"
 
 export default function MoistureGraph({route,navigation}) {
-//   const sampleData = [
-//     {x: '2018-01-01', y: 30},
-//     {x: '2018-01-02', y: 200},
-//     {x: '2018-01-03', y: 170},
-//     {x: '2018-01-04', y: 250},
-//     {x: '2018-01-05', y: 10}
-// ]
-// const data = [30, 200, 170, 250, 10] 
 const db = route.params.db
   console.log(db);
   const [moisturedata,setmoituredata] = useState([])
@@ -40,10 +32,6 @@ const db = route.params.db
         // console.log(key, value);
         Moi.push(value);
       }
-      // console.log(Date)
-      // console.log(Day)
-      // console.log(Time)
-      // console.log(Moi)
       let alldata = []; 
       for (let i = 0; i < Day.length; i++)
       {

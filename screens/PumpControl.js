@@ -1,149 +1,125 @@
 import { View, Text, StyleSheet, Dimensions, Pressable } from "react-native";
 import { useState, useEffect, useRef } from "react";
-// import Slider from "@react-native-community/slider";
-// import { Slider } from "react-native-range-slider-expo";
 import * as Progress from "react-native-progress";
-// import * as Device from "expo-device";
-// import * as Notifications from "expo-notifications";
+import * as Notifications from "expo-notifications";
 import { getDatabase, ref, onValue, update, set ,push} from "firebase/database"
-
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: false,
-//     shouldSetBadge: false,
-//   }),
-// });
-
-// async function scheduleNotificationPumpOnManually() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is ON",
-//       body: "Pump is turned ON manually.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOffManually() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is OFF",
-//       body: "Pump is turned OFF manually.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOnAutomatically() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is ON",
-//       body: "Pump is turned ON automatically.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationPumpOffAutomatically() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Pump is OFF",
-//       body: "Pump is turned OFF automatically.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-// async function scheduleNotificationWaterLevelLow() {
-//   await Notifications.scheduleNotificationAsync({
-//     content: {
-//       title: "Water Level Alert",
-//       body: "Water level in tank is low.",
-//     },
-//     trigger: { seconds: 1 },
-//   });
-// }
-
-// async function registerForPushNotificationsAsync() {
-//   let token;
-//   if (Platform.OS === "android") {
-//     await Notifications.setNotificationChannelAsync("default", {
-//       name: "default",
-//       importance: Notifications.AndroidImportance.MAX,
-//       vibrationPattern: [0, 250, 250, 250],
-//       lightColor: "#FF231F7C",
-//     });
-//   }
-//   if (Device.isDevice) {
-//     const { status: existingStatus } =
-//       await Notifications.getPermissionsAsync();
-//     let finalStatus = existingStatus;
-//     if (existingStatus !== "granted") {
-//       const { status } = await Notifications.requestPermissionsAsync();
-//       finalStatus = status;
-//     }
-//     if (finalStatus !== "granted") {
-//       alert(
-//         "Turn on the notification permission from settings to get notifications."
-//       );
-//       return;
-//     }
-//     token = (await Notifications.getExpoPushTokenAsync()).data;
-//     console.log(token);
-//   } else {
-//     alert("Must use physical device for Push Notifications");
-//   }
-//   return token;
-// }
+import { useSelector, useDispatch } from "react-redux";
+import { updatePumpCondition } from "../Redux/Action/pumpSatus";
+import * as notify from "../Notifications/notifications";
 
 export default function PumpControl({ route, navigation }) {
-  // const [sendNotification, setSendNotification]=useState(false)
-  // const [expoPushToken, setExpoPushToken] = useState("");
-  // const [notification, setNotification] = useState(false);
-  // const notificationListener = useRef();
-  // const responseListener = useRef();
-  // useEffect(() => {
-  //   registerForPushNotificationsAsync().then((token) =>
-  //     setExpoPushToken(token)
-  //   );
-  //   notificationListener.current =
-  //     Notifications.addNotificationReceivedListener((notification) => {
-  //       setNotification(notification);
-  //     });
-  //   responseListener.current =
-  //     Notifications.addNotificationResponseReceivedListener((response) => {
-  //       console.log(response);
-  //     });
-  //   return () => {
-  //     Notifications.removeNotificationSubscription(
-  //       notificationListener.current
-  //     );
-  //     Notifications.removeNotificationSubscription(responseListener.current);
-  //   };
-  // }, []);
+  const [sendNotification, setSendNotification]=useState(false)
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  useEffect(() => {
+    notify.registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        setNotification(notification);
+      });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
 
   // const [isPumpOff, setisPumpOff] = useState(true);
+  const dispatch = useDispatch()
+  const { pumpStatus, isPumpOff } = useSelector((state) => state.pumpStateReducer)
+
   const [pumpSpeed, setPumpSpeed] = useState(0);
   const [waterLevel, setWaterLevel] = useState(0.6);
   // const [pumpStatus, setPumpStatus] = useState("Pump Off Manually")
 
-    const db = route.params.db
-    
-    useEffect(() => {
+  const db = route.params.db
+  // const [pumpStatus, setPumpStatus] = useState("Pump off Manually");
+  // const [isPumpOff, setisPumpOff] = useState(false);
+  
+  const handlePumpCondition = () => {
+    // console.log(message)
+    console.log(isPumpOff)
+    if (isPumpOff) {
+      // setisPumpOff(false);
 
+      //PUMP ON HERE
+      set(ref(db, "/Pump Status"), false);
+
+      set(ref(db, "/isOnManually"), true);
+      set(ref(db, "/isOffManually"), false);
+      // setPumpStatus("Pump on Manually");
+     
+      // entries to pum table
+      var myDate= new Date();
+      var myDateString = ('0'+myDate.getDate()).slice(-2)+' '
+      + ('0'+ (myDate.getMonth()+1)).slice(-2)+' '+ myDate.getFullYear();
+      var myTimeString = ('0'+myDate.getHours()).slice(-2)+':'
+      + ('0'+ (myDate.getMinutes())).slice(-2)+':'+('0'+ (myDate.getSeconds())).slice(-2);
+      push(ref(db, "/pumpData/date"), myDateString);
+      push(ref(db, "/pumpData/time"), myTimeString);
+      push(ref(db, "/pumpData/status"), "Manually ON");
+      dispatch(updatePumpCondition("Pump on Manually", false))
+      // set(ref(db, "/pumpData/"), "Manually");
+
+    } else {
+      
+
+      // setisPumpOff(true);
+      set(ref(db, "/Pump Status"), true);
+      set(ref(db, "/isOffManually"), true);
+      set(ref(db, "/isOnManually"), false);
+      // setPumpStatus("Pump off Manually");
+      // PUMP OFF HERE
+      
+      // entries in pump table
+      var myDate= new Date();
+      var myDateString = ('0'+myDate.getDate()).slice(-2)+' '
+      + ('0'+ (myDate.getMonth()+1)).slice(-2)+' '+ myDate.getFullYear();
+      var myTimeString = ('0'+myDate.getHours()).slice(-2)+':'
+      + ('0'+ (myDate.getMinutes())).slice(-2)+':'+('0'+ (myDate.getSeconds())).slice(-2);
+      push(ref(db, "/pumpData/date"), myDateString);
+      push(ref(db, "/pumpData/time"), myTimeString);
+      push(ref(db, "/pumpData/status"), "Manually OFF");
+      dispatch(updatePumpCondition("Pump off Manually", true))
+      // set(ref(db, "/pumpData/"), "Manually");
+    }
+
+  
+    setSendNotification(true)
+    if (pumpStatus == "Pump off Manually") notify.scheduleNotificationPumpOnManually();
+    else if (pumpStatus == "Pump on Manually") notify.scheduleNotificationPumpOffManually();
+  };
+    useEffect(() => {
+      // console.log(`status ${handlePumpCondition}`)
       onValue(ref(db, '/Pump Status'), querySnapShot => {
         let data = querySnapShot.val() || {};
-        console.log(data)
+        // console.log(data)
 
         if (data == true) {
-          route.params.setisPumpOff(true)
+
+          // setisPumpOff(true)
           onValue(ref(db, '/isOffManually'), querySnapShot => {
             let datav = querySnapShot.val();
-            console.log("isOffManually = " + datav)
+            // console.log("isOffManually = " + datav)
             if (datav == true) {
-              route.params.setPumpStatus("Pump off Manually")
+              // setPumpStatus("Pump off Manually")
+              dispatch(updatePumpCondition("Pump off Manually", true))
 
             }
             else {
-              route.params.setPumpStatus("Pump off Automatically")
+              // setPumpStatus("Pump off Automatically")
+              dispatch(updatePumpCondition("Pump off Automatically", true))
+
             }
           })
 
@@ -151,38 +127,41 @@ export default function PumpControl({ route, navigation }) {
 
         else {
 
-          route.params.setisPumpOff(false)
+          // setisPumpOff(false)
           onValue(ref(db, '/isOnManually'), querySnapShot => {
             let datav = querySnapShot.val();
-            console.log("isOnManually = " + datav)
+            // console.log("isOnManually = " + datav)
             if (datav == true) {
-              route.params.setPumpStatus("Pump on Manually")
+              // setPumpStatus("Pump on Manually")
+              dispatch(updatePumpCondition("Pump on Manually", false))
 
             }
             else {
-              route.params.setPumpStatus("Pump on Automatically")
+              // setPumpStatus("Pump on Automatically")
+              dispatch(updatePumpCondition("Pump on Automatically", false))
+
             }
           })
         }
       })
-      // if (pumpStatus == "Pump off Automatically") scheduleNotificationPumpOnAutomatically();
-      // else if (pumpStatus == "Pump on Automatically") scheduleNotificationPumpOffAutomatically();
+      if (pumpStatus == "Pump off Automatically") notify.scheduleNotificationPumpOnAutomatically();
+      else if (pumpStatus == "Pump on Automatically") notify.scheduleNotificationPumpOffAutomatically();
       onValue(ref(db, '/Motar speed'), querySnapShot => {
         let data = querySnapShot.val();
-        console.log(data+" "+pumpSpeed)
+        // console.log(data+" "+pumpSpeed)
         if (pumpSpeed==0)
           setPumpSpeed(data);
       })
 
       onValue(ref(db, '/waterLeval'), querySnapShot => {
         let data = querySnapShot.val();
-        console.log(data + " " + pumpSpeed)
+        // console.log(data + " " + pumpSpeed)
         setWaterLevel(data)
       })
-      // if(waterLevel==0)
-      //  scheduleNotificationWaterLevelLow();
+      if(waterLevel==0)
+       notify.scheduleNotificationWaterLevelLow();
 
-    }, [route.params.isPumpOff])
+    }, [])
   const handlePumpSpeed = (value) => {
     let speed = Math.round(value);
     console.log(speed);
@@ -197,13 +176,13 @@ export default function PumpControl({ route, navigation }) {
         </View>
         <View style={styles.div2}>
           <Text style={styles.divText2}>
-            {route.params.pumpStatus}
+            {pumpStatus}
           </Text>
         </View>
       </View>
-      <Pressable style={styles.btn} onPress={route.params.handlePumpCondition} disabled = {waterLevel==0?true:false}>
+      <Pressable style={styles.btn} onPress={ handlePumpCondition} disabled = {waterLevel==0?true:false}>
         <Text style={styles.btnText}>
-          {!route.params.isPumpOff ? "TURN OFF PUMP" : "TURN ON PUMP"}
+          {!isPumpOff ? "TURN OFF PUMP" : "TURN ON PUMP"}
         </Text>
       </Pressable>
       <View style={styles.outerbox1}>
@@ -226,31 +205,6 @@ export default function PumpControl({ route, navigation }) {
           </View>
         </View>
       </View>
-      {/* <View style={styles.outerbox1}>
-        <View style={styles.div}>
-          <Text style={styles.divText}>Control Pump Speed</Text>
-        </View>
-        <Slider
-          min={0}
-          max={255}
-          containerStyle={{ width: 300}}
-          valueOnChange={handlePumpSpeed}
-          initialValue={12}
-          knobColor="green"
-          valueLabelsBackgroundColor="black"
-          inRangeBarColor="grey"
-          outOfRangeBarColor="green"
-          barHeight={8}
-        />
-        <View style={styles.boxes2}>
-          <View style={styles.box1}>
-            <Text style={{ fontSize: 20}}>Pump Speed</Text>
-          </View>
-          <View style={styles.box2}>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>{pumpSpeed}</Text>
-          </View>
-        </View>
-      </View> */}
       <Pressable
         style={styles.btn}
         onPress={() => navigation.navigate("pumpSpeedData")}
