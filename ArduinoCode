@@ -2,6 +2,7 @@
 #include <FirebaseArduino.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+
 // Set these to run example.
 #define FIREBASE_HOST "smart-irrigation-d65e8-default-rtdb.firebaseio.com"
 #define FIREBASE_AUTH "mtsWVSA4UDe0ohv4lzwIkxPyYaIfTE3kWUmjuPgj"
@@ -10,25 +11,24 @@
 int sensorpin=A0;
 int sensorvalue=0;
 int outputvalue=0;
-const int trigPin = D1;  //D4
-const int echoPin = D2;
+#define echoPin D2
+#define trigPin D1
 double  duration;
 double distance;
-double waterLevel;
-  double tankheight = 100; 
+ double tankheight = 10.3; 
 
 bool isoff = true ;
 int speedLevel = 0;  
-int takemoisture = 100000; 
+int takemoisture = 1000000; 
 String  dayWeek [] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "in.pool.ntp.org", 19800, 60000);
 void setup() {
   Serial.begin(9600);
 
-  // connect to wifi.
+  // connection  to wifi.
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-//  WiFi.begin(WIFI_SSID);
+
   Serial.print("connecting");
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
@@ -45,6 +45,9 @@ void setup() {
 
   pinMode (D4,OUTPUT);
   pinMode (A0,INPUT);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  delay(2000);   
 }
 
 int n = 0;
@@ -53,9 +56,9 @@ void loop() {
 
 
    sensorvalue=analogRead(A0);
- outputvalue=100-map(sensorvalue,0,1023,1,100); 
- int waterLevel = calculateDistance() ; 
-// Firebase.setInt("waterLevel", waterLevel);
+ outputvalue=100-map(sensorvalue,0,1023,0,100); 
+double waterLevel = calculateDistance() ; 
+
  Firebase.setInt("waterLeval", waterLevel);
 
  timeClient.update();
@@ -68,11 +71,11 @@ void loop() {
   String mm = date_time.substring(5,index_date-3); 
   String yyyy = date_time.substring(0,index_date-6); 
   String date = (dd+" "+mm+" "+yyyy);
-//  int waterLevel = calculateDistance(); ; 
-  Serial.println(day);
-  Serial.println(timev);
+
   Serial.println(date);
-  if(!takemoisture)
+
+  // updating the moisture table 
+  if(timev>="11:00:00" and timev<="11:00:05")
   {  
     Firebase.pushString("Moisture_Table/Date",date );
     Firebase.pushString("Moisture_Table/Day",day );
@@ -80,90 +83,94 @@ void loop() {
     Firebase.pushInt("Moisture_Table/Moisture",outputvalue );
     takemoisture = 10000; 
   }
- //---------------------------------------
+ 
 
  
 
 
- 
+  // setting moisture level 
+  
   Firebase.setInt("Moisture", outputvalue);
-  // handle error
+ 
   if (Firebase.failed()) {
       Serial.print("setting /Moiture failed:");
       Serial.println(Firebase.error());  
       return;
   }
-//  delay(1000);
+
   //----
   isoff = Firebase.getBool("Pump Status");
-  speedLevel = Firebase.getInt("Motar speed");
-  Serial.print(speedLevel);
+
+
   if(!isoff)
 {
-     analogWrite(D4,255-speedLevel) ;
+     analogWrite(D4,LOW) ;
 }
 else{
        digitalWrite(D4,HIGH) ;
 
 }
-//---
+
 
 
 if( outputvalue<20 and isoff and waterLevel>0)
-  {
-       Serial.println("watering plant");
+  {   //automatic turn on of motor
+
        Firebase.setBool("isOnManually", false);
+       //entries in the pump data 
+       Firebase.pushString("pumpData/date",date);
+       Firebase.pushString("pumpData/time",timev);
+       Firebase.pushString("pumpData/status","automatic ON");
+
        
-    
    Firebase.setBool("Pump Status", false);
   if (Firebase.failed()) {
       Serial.print("setting /message failed:");
       Serial.println(Firebase.error());  
       return;
-  }
-
-        
-//       delay(1000); 
+  }   
+    delay(1000); 
   }
   else if(outputvalue>60 and !isoff)
   {
-       Serial.println("soil is wet enough to water");
-              Firebase.setBool("isOffManually", false);
+       // automatic turn OFF of motor
+       Firebase.setBool("isOffManually", false);
+       Firebase.setBool("Pump Status", true); 
+       Firebase.pushString("pumpData/date",date);
+       Firebase.pushString("pumpData/time",timev);
+       Firebase.pushString("pumpData/status","automatic OFF");
 
-
-      
-          Firebase.setBool("Pump Status", true);
   if (Firebase.failed()) {
       Serial.print("setting /message failed:");
       Serial.println(Firebase.error());  
       return;
   }
+  
   }
    
-
-  //-------------------------------------
- 
-   
-
-//  delay(1000);
-takemoisture = takemoisture-1 ; 
 }
+
+// calculating water level 
 double  calculateDistance()
 {
-// Clears the trigPin
+
 digitalWrite(trigPin, LOW);
 delayMicroseconds(2);
 
-// Sets the trigPin on HIGH state for 10 micro seconds
+
 digitalWrite(trigPin, HIGH);
 delayMicroseconds(10);
 digitalWrite(trigPin, LOW);
 
-// Reads the echoPin, returns the sound wave travel time in microseconds
+
 duration = pulseIn(echoPin, HIGH);
+distance = duration * 0.034 / 2; 
+Serial.println("distance = ");
 
-// Calculating the distance
-distance= duration*0.034/2;
-return waterLevel = tankheight-distance;
-
+Serial.println(distance);
+double waterLevel = 100-map(distance,0,8,0,100);
+if(waterLevel>0){
+  return waterLevel; 
+}
+else return 0 ; 
 }
